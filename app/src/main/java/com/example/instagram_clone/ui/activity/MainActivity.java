@@ -2,9 +2,13 @@ package com.example.instagram_clone.ui.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -18,6 +22,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
+    Context mContext = MainActivity.this;
+    private static final int ACTIVITY_NUM = 0;
+
     BottomNavigationView bottomNavigationView;
     Fragment fragment_detail;
     Fragment fragment_user;
@@ -28,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
         fragment_alarm = new AlarmFragment();
         fragment_user = new UserFragment();
@@ -47,7 +55,9 @@ public class MainActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_grid).commit();
                         break;
                     case R.id.action_add_photo:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_detail).commit(); //수정필요
+                        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == getPackageManager().PERMISSION_GRANTED){
+                            startActivity(new Intent(MainActivity.this, AddPhotoActivity.class));
+                        }
                         break;
                     case R.id.action_favorite_alarm:
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_alarm).commit();
@@ -61,5 +71,6 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
     }
 }
