@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".activity.LoginActivity">
 
 
     <ImageView
@@ -63,13 +63,26 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="10dp"
+            android:background="@color/colorEmailSignIn"
             android:gravity="center"
             android:padding="10dp"
-            android:text="@string/signin_email"
+            android:text="login"
             android:textAlignment="center"
             android:textSize="18dp"
-            android:textStyle="bold"
-            android:background="@color/colorEmailSignIn"/>
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btn_signup"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/colorEmailSignIn"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="sign up"
+            android:textAlignment="center"
+            android:textSize="18dp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/btn_google"
