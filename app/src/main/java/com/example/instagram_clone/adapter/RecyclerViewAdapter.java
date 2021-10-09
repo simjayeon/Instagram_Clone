@@ -117,6 +117,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
+
+    //좋아요 누르기 이벤트
     public void favoritEvent(int position){
         firestore  = FirebaseFirestore.getInstance();
 
