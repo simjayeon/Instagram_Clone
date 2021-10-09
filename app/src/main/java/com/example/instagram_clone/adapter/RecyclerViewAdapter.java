@@ -1,6 +1,7 @@
 package com.example.instagram_clone.adapter;
 
 import android.content.Context;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.model.ContentDTO;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,15 +31,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     FirebaseFirestore firestore = FirebaseFirestore.getInstance();
     ArrayList<ContentDTO> contentDTOS;
-    ArrayList<String> contentUidList;
+    ArrayList<String> contentUidList = new ArrayList<>();
     Context context;
+    String uid;
 
 
 
     public RecyclerViewAdapter(ArrayList<ContentDTO> contentDTOS, Context context){
         this.contentDTOS = new ArrayList<>();
         this.context = context;
-        contentUidList = new ArrayList<>();
+
 
         firestore.collection("images").orderBy("timestamp").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -59,42 +62,85 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_detail, parent,false);
-        System.out.println("여기 오니?");
         return new CustomViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        System.out.println("여기 오니?2");
+
         holder = ((CustomViewHolder) holder);
         ((CustomViewHolder) holder).detail_user_name.setText(contentDTOS.get(position).userId); //userName
         Glide.with(holder.itemView.getContext()).load(contentDTOS.get(position).imageUrl).into(((CustomViewHolder) holder).detail_profile_img); //프로필이미지
         Glide.with(holder.itemView.getContext()).load(contentDTOS.get(position).imageUrl).into(((CustomViewHolder) holder).detail_content_img); //콘텐츠이미지
         ((CustomViewHolder) holder).detail_favorit_count.setText(contentDTOS.get(position).favoriteCount+"명이 좋아합니다"); //userName
         ((CustomViewHolder) holder).detail_content_txt.setText(contentDTOS.get(position).explain); //userName
+
+        //좋아요 버튼 클릭
+        ((CustomViewHolder) holder).btn_favorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                favoritEvent(position);
+            }
+        });
+
+        //좋아요 하트 채워지기 이벤트(수정필요)
+        if(contentDTOS.get(position).favorities.containsKey(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+            ((CustomViewHolder) holder).btn_favorite.setImageResource(R.drawable.ic_favorite);
+        }else{
+            ((CustomViewHolder) holder).btn_favorite.setImageResource(R.drawable.ic_favorite_border);
+        }
+
+
     }
 
     @Override
     public int getItemCount() {
-        System.out.println("여기 오니?3");
         return contentDTOS.size();
     }
 
     private class CustomViewHolder extends RecyclerView.ViewHolder {
         ImageView detail_profile_img;
         ImageView detail_content_img;
+        ImageView btn_favorite;
         TextView detail_user_name;
         TextView detail_favorit_count;
         TextView detail_content_txt;
 
         public CustomViewHolder(View view) {
             super(view);
-            System.out.println("여기 오니?4");
             detail_profile_img = (ImageView) view.findViewById(R.id.detail_profile_img);
             detail_content_img = (ImageView) view.findViewById(R.id.detail_content_img);
             detail_user_name = (TextView) view.findViewById(R.id.detail_profile_name);
             detail_favorit_count = (TextView) view.findViewById(R.id.detail_favorit_count);
             detail_content_txt = (TextView) view.findViewById(R.id.detail_content_txt);
+            btn_favorite = (ImageView) view.findViewById(R.id.btn_favorite);
         }
+    }
+
+    public void favoritEvent(int position){
+        firestore  = FirebaseFirestore.getInstance();
+
+        firestore.runTransaction(transaction -> {
+            uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            ContentDTO contentDTO = transaction.get(firestore.collection("images")
+                    .document(contentUidList.get(position))).toObject(ContentDTO.class);
+
+            if(contentDTO.favorities.containsKey(uid)){
+                //좋아요가 눌렸을 때 - 좋아요를 취소하는 이벤트
+                //눌린 상태여서 취소해야하기 때문에 좋아요 개수 -1과 좋아요 누른 유저의 정보를 삭제해야함
+                contentDTO.favoriteCount = contentDTO.favoriteCount -1;
+                contentDTO.favorities.remove(uid);
+            }else{
+                //좋아요가 눌려있지 않을 때 - 좋아요를 누르는 이벤트
+                //좋아요가 눌리지 않은 상태라서 좋아요를 누르면 개수 +1과 좋아요 누른 유저의 정보가 등록되어야 함
+                contentDTO.favoriteCount = contentDTO.favoriteCount +1;
+                contentDTO.favorities.get(uid);
+            }
+
+            //트랜잭션을 다시 서버로 돌려준다.\
+
+            return  transaction.set(firestore.collection("images")
+                    .document(contentUidList.get(position)),contentDTO);
+        });
     }
 }

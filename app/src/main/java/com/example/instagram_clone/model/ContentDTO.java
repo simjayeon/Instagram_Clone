@@ -12,7 +12,7 @@ public class ContentDTO{
     public String uid;
     public String userId;
     public long timestamp;
-    public  int favoriteCount;
+    public int favoriteCount;
     public Map<String, Boolean> favorities = new HashMap<>();
 
 

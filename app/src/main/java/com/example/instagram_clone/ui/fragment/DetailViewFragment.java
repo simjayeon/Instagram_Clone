@@ -15,7 +15,9 @@ import com.example.instagram_clone.R;
 import com.example.instagram_clone.adapter.RecyclerViewAdapter;
 import com.example.instagram_clone.model.ContentDTO;
 import com.example.instagram_clone.ui.activity.MainActivity;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Transaction;
 
 import java.util.ArrayList;
 
@@ -25,6 +27,7 @@ public class DetailViewFragment extends Fragment {
     RecyclerView recyclerView;
     RecyclerViewAdapter recyclerViewAdapter;
     ArrayList<ContentDTO> contentDTOS = new ArrayList<>();
+    ArrayList<String> contentUidList = new ArrayList<>();
 
     @Nullable
     @Override
