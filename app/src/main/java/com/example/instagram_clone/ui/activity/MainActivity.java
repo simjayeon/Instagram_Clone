@@ -18,6 +18,7 @@ import com.example.instagram_clone.ui.fragment.DetailViewFragment;
 import com.example.instagram_clone.ui.fragment.GridFragment;
 import com.example.instagram_clone.ui.fragment.UserFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -42,8 +43,6 @@ public class MainActivity extends AppCompatActivity {
         fragment_detail = new DetailViewFragment();
         fragment_grid = new GridFragment();
 
-
-
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_NaviBar);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -51,27 +50,35 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()){
                     case R.id.action_home:
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_detail).commit();
-                        break;
+                        return true;
                     case R.id.action_search:
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_grid).commit();
-                        break;
+                        return true;
                     case R.id.action_add_photo:
                         if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == getPackageManager().PERMISSION_GRANTED){
                             startActivity(new Intent(MainActivity.this, AddPhotoActivity.class));
                         }
-                        break;
+                        return true;
                     case R.id.action_favorite_alarm:
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_alarm).commit();
-                        break;
+                        return true;
                     case R.id.action_account:
+                        //uid값 넘겨주기
+                        Fragment userFragment = new UserFragment();
+                        Bundle bundle = new Bundle(); //??
+                        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        bundle.putString("destinationUid", uid);
+                        fragment_user.setArguments(bundle);
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_user).commit();
-                        break;
+                        return true;
 
 
                 }
                 return false;
             }
         });
+
+        bottomNavigationView.setSelectedItemId(R.id.action_home);
 
     }
 }
