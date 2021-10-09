@@ -75,7 +75,6 @@ public class AddPhotoActivity extends AppCompatActivity {
 
 
             }else{ //취소버튼을 눌렀을 때 작동하는 부분
-               // onDestroy();
             }
         }
     }
@@ -122,10 +121,5 @@ public class AddPhotoActivity extends AppCompatActivity {
         });
 
 
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 }

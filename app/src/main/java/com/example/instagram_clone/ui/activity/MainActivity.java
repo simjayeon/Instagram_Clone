@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         fragment_grid = new GridFragment();
 
 
+
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_NaviBar);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override

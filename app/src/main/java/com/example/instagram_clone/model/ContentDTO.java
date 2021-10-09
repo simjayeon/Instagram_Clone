@@ -15,6 +15,8 @@ public class ContentDTO{
     public  int favoriteCount;
     public Map<String, Boolean> favorities = new HashMap<>();
 
+
+    //댓글
     public class Comment{
         String uid;
         String userId;
