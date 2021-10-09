@@ -15,6 +15,7 @@ import com.example.instagram_clone.R;
 import com.example.instagram_clone.adapter.RecyclerViewAdapter;
 import com.example.instagram_clone.model.ContentDTO;
 import com.example.instagram_clone.ui.activity.MainActivity;
+import com.firebase.ui.auth.data.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Transaction;
@@ -28,6 +29,7 @@ public class DetailViewFragment extends Fragment {
     RecyclerViewAdapter recyclerViewAdapter;
     ArrayList<ContentDTO> contentDTOS = new ArrayList<>();
     ArrayList<String> contentUidList = new ArrayList<>();
+    Fragment userFramgent = new UserFragment();
 
     @Nullable
     @Override
@@ -40,6 +42,12 @@ public class DetailViewFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(recyclerViewAdapter);
+
+        /*
+        getActivity().getFragmentManager().beginTransaction()
+                .replace(R.id.main_content, userFramgent).commit(); //수정필요
+                
+         */
 
         return view;
     }

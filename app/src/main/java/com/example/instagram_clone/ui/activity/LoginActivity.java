@@ -77,6 +77,13 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    //자동로그인
+    @Override
+    protected void onStart() {
+        super.onStart();
+        moveMainPage(firebaseAuth.getCurrentUser());
+    }
+
     //어떻게 나눌지
     public void signUp(){
         firebaseAuth.createUserWithEmailAndPassword(edit_email.getText().toString(), edit_password.getText().toString())
@@ -122,6 +129,7 @@ public class LoginActivity extends AppCompatActivity {
     public void moveMainPage(FirebaseUser user){
         if (user != null){ //파이어베이스 유저상태가 있을 경우 아래 실행
             startActivity(new Intent(this, MainActivity.class));
+            finish();
         }
     }
 

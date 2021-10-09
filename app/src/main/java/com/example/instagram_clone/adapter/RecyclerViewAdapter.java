@@ -1,7 +1,9 @@
 package com.example.instagram_clone.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.Image;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,12 +12,16 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.model.ContentDTO;
+import com.example.instagram_clone.ui.fragment.UserFragment;
+import com.firebase.ui.auth.data.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -34,7 +40,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     ArrayList<String> contentUidList = new ArrayList<>();
     Context context;
     String uid;
-
+    Fragment fragment_user = new UserFragment();
 
 
     public RecyclerViewAdapter(ArrayList<ContentDTO> contentDTOS, Context context){
@@ -47,6 +53,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 RecyclerViewAdapter.this.contentDTOS.clear();
                 contentUidList.clear();
+                if(value == null){
+                    //쿼리값이 없을 때 바로 종료시키는 것 (오류 방지)
+                }
 
                 for(QueryDocumentSnapshot doc : value){
                     RecyclerViewAdapter.this.contentDTOS.add(doc.toObject(ContentDTO.class));
@@ -89,6 +98,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }else{
             ((CustomViewHolder) holder).btn_favorite.setImageResource(R.drawable.ic_favorite_border);
         }
+
+        ((CustomViewHolder) holder).detail_profile_img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString("destinataionUid", contentDTOS.get(position).uid);
+                bundle.putString("userId", contentDTOS.get(position).userId);
+                fragment_user.setArguments(bundle);
+                fragment_user.getActivity()
+                        .getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.main_content, fragment_user)
+                        .commit();
+            }
+        });
 
 
     }

@@ -11,6 +11,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.ui.fragment.AlarmFragment;
@@ -32,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
     Fragment fragment_alarm;
     Fragment fragment_grid;
 
+    ImageView btn_back, toolbar_logo;
+    Button btn_follow;
+    TextView toolbar_user_id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,10 +51,16 @@ public class MainActivity extends AppCompatActivity {
         fragment_detail = new DetailViewFragment();
         fragment_grid = new GridFragment();
 
+        btn_back =findViewById(R.id.btn_back);
+        btn_follow = findViewById(R.id.btn_follow);
+        toolbar_user_id = findViewById(R.id.toolbar_user_id);
+        toolbar_logo = findViewById(R.id.toolbar_logo);
+
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_NaviBar);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                setToolbarDefault();
                 switch (item.getItemId()){
                     case R.id.action_home:
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_detail).commit();
@@ -64,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     case R.id.action_account:
                         //uid값 넘겨주기
-                        Fragment userFragment = new UserFragment();
                         Bundle bundle = new Bundle(); //??
                         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                         bundle.putString("destinationUid", uid);
@@ -79,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
         bottomNavigationView.setSelectedItemId(R.id.action_home);
+    }
 
+    public void setToolbarDefault(){
+        toolbar_user_id.setVisibility(View.GONE);
+        btn_back.setVisibility(View.GONE);
+        toolbar_logo.setVisibility(View.VISIBLE);
     }
 }
