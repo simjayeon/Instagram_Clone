@@ -147,7 +147,6 @@ public class UserFragment extends Fragment {
             }
         });
 
-
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 3);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(userFragmentAdapter);
@@ -156,7 +155,6 @@ public class UserFragment extends Fragment {
 
         return view;
     }
-
 
 
 
@@ -187,8 +185,6 @@ public class UserFragment extends Fragment {
         });
     }
 
-
-
     //데이터베이스에서 이미지 가져오기 (오류가 여기인가)
     public void getProfileImage(){
         firestore.collection("profileImages").document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -212,7 +208,6 @@ public class UserFragment extends Fragment {
                 followDTO = transaction.get(doFollowing).toObject(FollowDTO.class);
 
                 System.out.println(currentUserId+"현재 아이디");
-
 
                 //조건 1
                 if(followDTO == null){
@@ -263,8 +258,6 @@ public class UserFragment extends Fragment {
 
     }
 
-
-
     //이따가 설정
     public void followerAlarm(String destinationUid){
         AlarmDTO alarmDTO = new AlarmDTO();
@@ -278,7 +271,6 @@ public class UserFragment extends Fragment {
     }
 
     //////////////////////////리사이클러뷰 어댑터///////////////////////////////////////
-
     public class UserFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
@@ -286,7 +278,6 @@ public class UserFragment extends Fragment {
         ArrayList<ContentDTO> contentDTOS;
         ArrayList<String> contentUidList = new ArrayList<>();
         String uid;
-
 
         public UserFragmentAdapter(String uid){
             contentDTOS = new ArrayList<>();
@@ -310,7 +301,6 @@ public class UserFragment extends Fragment {
             });
         }
 
-
         @NonNull
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -331,7 +321,6 @@ public class UserFragment extends Fragment {
                     .load(contentDTOS.get(position).imageUrl)
                     .centerCrop()
                     .into(((CustomViewHolder) holder).imageView);
-
         }
 
         @Override
@@ -349,5 +338,4 @@ public class UserFragment extends Fragment {
             }
         }
     }
-
 }
