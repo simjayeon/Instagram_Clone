@@ -2,6 +2,7 @@ package com.example.instagram_clone.ui.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,11 +41,13 @@ public class UserFragment extends Fragment {
 
     UserFragmentAdapter userFragmentAdapter;
     RecyclerView recyclerView;
-    String uid, currentUserId;
+    String uid, currentUserId, selectUid;
     ImageView btn_back, toolbar_logo;
     Button btn_follow;
     TextView toolbar_user_id;
     BottomNavigationView bottomNavigationView;
+
+    MainActivity mainActivity = new MainActivity();
 
     @Nullable
     @Override
@@ -67,13 +70,14 @@ public class UserFragment extends Fragment {
         Bundle bundle = this.getArguments();
         if(bundle != null){
             uid = bundle.getString("destinationUid");
+            selectUid = bundle.getString("userId");
         }else{
             System.out.println("값이 안왔슈");
         }
 
-
         currentUserId = firebaseAuth.getCurrentUser().getUid();
-        if (uid == currentUserId){
+        System.out.println("currentUserId이요"+currentUserId);
+        if (uid != null && uid.equals(currentUserId)){
             //Mypage
             btn_follow.setText(R.string.signout);
             btn_follow.setOnClickListener(new View.OnClickListener() {
@@ -81,13 +85,15 @@ public class UserFragment extends Fragment {
                 public void onClick(View v) {
                     getActivity().finish();
                     startActivity(new Intent(getActivity(), LoginActivity.class));
-                    firebaseAuth.signOut();
+                    firebaseAuth.signOut();  //종료되는거 수정필요
                 }
             });
         }else{
+            //uid값 넘겨주기
             //otherUserpage
             btn_follow.setText(R.string.follow);
-            MainActivity mainActivity = new MainActivity();
+
+            //메인액티비티 xml 가져와야함(오류)
             toolbar_user_id.setText(uid);
             btn_back.setOnClickListener(new View.OnClickListener() {
                 @Override

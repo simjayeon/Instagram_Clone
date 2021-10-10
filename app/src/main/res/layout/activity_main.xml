@@ -4,14 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.activity.MainActivity">
+    tools:context=".ui.activity.MainActivity"
+    android:layout_toRightOf="@+id/mainActivity">
 
     <!-- 상단 툴바  -->
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="50dp"
+        app:contentInsetStart="0dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -61,7 +63,8 @@
         android:layout_height="match_parent"
         app:layout_constraintBottom_toTopOf="@+id/toolbar"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_below="@id/toolbar">
+        android:layout_below="@id/toolbar"
+        android:layout_above="@id/bottom_NaviBar">
 
         <FrameLayout
             android:id="@+id/main_content"
@@ -85,6 +88,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         app:menu="@menu/bottom_navi_menu"/>
+
 
 
 </RelativeLayout>

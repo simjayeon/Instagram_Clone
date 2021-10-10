@@ -1,6 +1,7 @@
 package com.example.instagram_clone.ui.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -9,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -60,23 +62,27 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                setToolbarDefault();
                 switch (item.getItemId()){
                     case R.id.action_home:
+                        setToolbarDefault();
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_detail).commit();
                         return true;
                     case R.id.action_search:
+                        setToolbarDefault();
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_grid).commit();
                         return true;
                     case R.id.action_add_photo:
+                        setToolbarDefault();
                         if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == getPackageManager().PERMISSION_GRANTED){
                             startActivity(new Intent(MainActivity.this, AddPhotoActivity.class));
                         }
                         return true;
                     case R.id.action_favorite_alarm:
+                        setToolbarDefault();
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_alarm).commit();
                         return true;
                     case R.id.action_account:
+                        setToolbarDefault();
                         //uid값 넘겨주기
                         Bundle bundle = new Bundle(); //??
                         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();

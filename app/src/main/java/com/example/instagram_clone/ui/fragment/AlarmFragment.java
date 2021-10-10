@@ -1,11 +1,9 @@
 package com.example.instagram_clone.ui.fragment;
 
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,9 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.instagram_clone.R;
-import com.example.instagram_clone.adapter.RecyclerViewAdapter;
 import com.example.instagram_clone.model.AlarmDTO;
-import com.example.instagram_clone.model.ContentDTO;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
