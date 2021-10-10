@@ -27,7 +27,7 @@ public class GridFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         fragmentView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_grid, container, false);
-        uid = getArguments().getString("destinationUid");
+     /*   uid = getArguments().getString("destinationUid");
         firestore = FirebaseFirestore.getInstance();
         currentUserUid = auth.getCurrentUser().getUid();
 
@@ -39,7 +39,7 @@ public class GridFragment extends Fragment {
 
                 }
             });
-        }
+        }*/
 
         return fragmentView;
     }

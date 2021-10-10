@@ -19,9 +19,9 @@ public class ContentDTO{
 
     //댓글
     public class Comment{
-        String uid;
-        String userId;
-        String comment;
-        long timestamp;
+        String uid;  // 파이어베이스 uid
+        String userId; // 아이디(이메일)
+        String comment; // 댓글
+        long timestamp; // 타임스탬프
     }
 }

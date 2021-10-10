@@ -40,8 +40,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     ArrayList<String> contentUidList = new ArrayList<>();
     Context context;
     String uid;
-    Fragment fragment_user = new UserFragment();
-
+    public Fragment fragment_user = new Fragment();
 
     public RecyclerViewAdapter(ArrayList<ContentDTO> contentDTOS, Context context){
         this.contentDTOS = new ArrayList<>();
@@ -65,7 +64,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
         });
     }
-
 
     @NonNull
     @Override
@@ -105,16 +103,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 Bundle bundle = new Bundle();
                 bundle.putString("destinataionUid", contentDTOS.get(position).uid);
                 bundle.putString("userId", contentDTOS.get(position).userId);
+                System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
                 fragment_user.setArguments(bundle);
-                fragment_user.getActivity()
-                        .getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.main_content, fragment_user)
-                        .commit();
+                fragment_user.getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_user).addToBackStack(null).commit();
+                System.out.println("########################################################################################");
             }
         });
-
-
     }
 
     @Override

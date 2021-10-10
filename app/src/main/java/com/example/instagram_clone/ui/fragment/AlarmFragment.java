@@ -33,8 +33,8 @@ public class AlarmFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_alarm,container,false);
-        alarmfragment_recyclerview.setAdapter(new AlarmRecyclerviewAdapter());
-        alarmfragment_recyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
+        //alarmfragment_recyclerview.setAdapter(new AlarmRecyclerviewAdapter());
+        //alarmfragment_recyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         return view;
     }
@@ -48,10 +48,11 @@ public class AlarmFragment extends Fragment {
             FirebaseFirestore.getInstance().collection("alarms").whereEqualTo("destinationId", uid).addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                    QuerySnapshot querySnapshot;
+
                     alarmDTOArrayList.clear();
 
-
+                    if(querySnapshot == null){
+                    }
                 }
             });
         }
