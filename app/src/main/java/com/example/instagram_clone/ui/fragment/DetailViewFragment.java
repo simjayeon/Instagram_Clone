@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.instagram_clone.R;
+import com.example.instagram_clone.model.AlarmDTO;
 import com.example.instagram_clone.model.ContentDTO;
 import com.example.instagram_clone.ui.activity.CommentActivity;
 import com.google.firebase.FirebaseApp;
@@ -100,7 +101,7 @@ public class DetailViewFragment extends Fragment {
 
             holder = ((CustomViewHolder) holder);
             ((CustomViewHolder) holder).detail_user_name.setText(contentDTOS.get(position).userId); //userName
-            Glide.with(holder.itemView.getContext()).load(contentDTOS.get(position).imageUrl).into(((CustomViewHolder) holder).detail_profile_img); //프로필이미지
+            ///Glide.with(holder.itemView.getContext()).load(contentDTOS.get(position).imageUrl).into(((CustomViewHolder) holder).detail_profile_img); //프로필이미지
             Glide.with(holder.itemView.getContext()).load(contentDTOS.get(position).imageUrl).into(((CustomViewHolder) holder).detail_content_img); //콘텐츠이미지
             ((CustomViewHolder) holder).detail_favorit_count.setText(contentDTOS.get(position).favoriteCount + "명이 좋아합니다"); //userName
             ((CustomViewHolder) holder).detail_content_txt.setText(contentDTOS.get(position).explain); //userName
@@ -151,6 +152,7 @@ public class DetailViewFragment extends Fragment {
                 public void onClick(View v) {
                     Intent intent = new Intent(getView().getContext(), CommentActivity.class);
                     intent.putExtra("contentUid", contentUidList.get(position));
+                    intent.putExtra("destinationUid", contentDTOS.get(position).uid);
                     startActivity(intent);
                 }
             });
@@ -208,6 +210,7 @@ public class DetailViewFragment extends Fragment {
                     //좋아요가 눌리지 않은 상태라서 좋아요를 누르면 개수 +1과 좋아요 누른 유저의 정보가 등록되어야 함
                     contentDTO.favoriteCount = contentDTO.favoriteCount + 1;
                     contentDTO.favorities.get(uid);
+                    favoriteAlarm(contentDTOS.get(position).uid); //카운터가 올라가는 사람이름 알림
                 }
 
                 //트랜잭션을 다시 서버로 돌려준다.\
@@ -215,6 +218,17 @@ public class DetailViewFragment extends Fragment {
                 return transaction.set(firestore.collection("images")
                         .document(contentUidList.get(position)), contentDTO);
             });
+        }
+
+        //좋아요 알람
+        public void favoriteAlarm(String destinationUid){
+            AlarmDTO alarmDTO = new AlarmDTO();
+            alarmDTO.destinationUid = destinationUid;
+            alarmDTO.userId = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+            alarmDTO.uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            alarmDTO.kind = 0;
+            alarmDTO.timestamp = System.currentTimeMillis();
+            FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO);
         }
     }
 }

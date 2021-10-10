@@ -18,6 +18,7 @@ import android.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.example.instagram_clone.R;
+import com.example.instagram_clone.model.AlarmDTO;
 import com.example.instagram_clone.model.ContentDTO;
 import com.example.instagram_clone.ui.fragment.DetailViewFragment;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,8 +35,9 @@ public class CommentActivity extends AppCompatActivity {
     Button btn_send;
     ContentDTO.Comment comments = new ContentDTO.Comment();
     EditText comment_message;
-    String contentUid;
+    String contentUid, destinationUid;
     RecyclerView commentRecyclerView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class CommentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_comment);
 
         contentUid = getIntent().getStringExtra("contentUid");
+        destinationUid = getIntent().getStringExtra("destinationUid");
 
         comment_message = findViewById(R.id.comment_message_edit);
         commentRecyclerView = findViewById(R.id.comment_recycler_view);
@@ -56,7 +59,7 @@ public class CommentActivity extends AppCompatActivity {
                 comments.timestamp = System.currentTimeMillis();
 
                 FirebaseFirestore.getInstance().collection("images").document(contentUid).collection("comments").document().set(comments);
-
+                commentAlarm(destinationUid, comment_message.getText().toString());
                 comment_message.setText(""); //데이터 보낸 후 초기화
             }
         });
@@ -66,6 +69,16 @@ public class CommentActivity extends AppCompatActivity {
         commentRecyclerView.setLayoutManager(layoutManager);
         commentRecyclerView.setAdapter(commentRecyclerViewAdapter);
 
+    }
+
+    public void commentAlarm(String destinationUid, String message){
+        AlarmDTO alarmDTO  = new AlarmDTO();
+        alarmDTO.destinationUid = destinationUid;
+        alarmDTO.userId = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        alarmDTO.uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        alarmDTO.timestamp = System.currentTimeMillis();
+        alarmDTO.message = message;
+        FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO);
     }
 
 

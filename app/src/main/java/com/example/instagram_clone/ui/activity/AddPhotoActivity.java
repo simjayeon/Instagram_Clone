@@ -52,7 +52,6 @@ public class AddPhotoActivity extends AppCompatActivity {
         //ㅐㅇㄹ범 열기
         Intent photoPickIntent = new Intent(Intent.ACTION_PICK);
         photoPickIntent.setType("image/*");
-        //photoPickIntent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(photoPickIntent, PICK_IMAGE_FROM_ALBUM );
 
         btn_add_Photo.setOnClickListener(new View.OnClickListener() {

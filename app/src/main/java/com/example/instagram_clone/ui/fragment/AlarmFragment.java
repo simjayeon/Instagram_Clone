@@ -35,6 +35,7 @@ public class AlarmFragment extends Fragment {
         return view;
     }
 
+
      class AlarmRecyclerviewAdapter extends RecyclerView.Adapter{
         ArrayList<AlarmDTO> alarmDTOArrayList = new ArrayList<>();
 
@@ -68,4 +69,6 @@ public class AlarmFragment extends Fragment {
             return 0;
         }
     }
+
+
 }
