@@ -86,7 +86,11 @@ public class AlarmFragment extends Fragment {
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             View view = holder.itemView;
 
-            FirebaseFirestore.getInstance().collection("profileImages").document(alarmDTOList.get(position).uid).get().addOnCompleteListener(task -> )
+            FirebaseFirestore.getInstance().collection("profileImages").document(alarmDTOList.get(position).uid).get().addOnCompleteListener(task -> {
+                if(task.isSuccessful()){
+                    Object url = task.getResult();
+                }
+            });
 
             switch (alarmDTOList.get(position).kind){
                 case 0:
