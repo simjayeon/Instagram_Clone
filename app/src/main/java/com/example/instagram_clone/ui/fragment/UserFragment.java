@@ -51,7 +51,7 @@ public class UserFragment extends Fragment {
     String uid, currentUserId, selectUid;
     ImageView btn_back, toolbar_logo, account_iv_profile;
     Button btn_follow;
-    TextView toolbar_user_id, account_tv_following_count, account_tv_follower_count;
+    TextView toolbar_user_id, account_tv_following_count, account_tv_follower_count, account_post_count;
     BottomNavigationView bottomNavigationView;
     int PICK_PROFILE_FROM_ALBUM = 55;
 
@@ -80,6 +80,7 @@ public class UserFragment extends Fragment {
         toolbar_logo = view.findViewById(R.id.toolbar_logo);
         account_tv_following_count = view.findViewById(R.id.account_tv_following_count);
         account_tv_follower_count = view.findViewById(R.id.account_tv_follower_count);
+        account_post_count = view.findViewById(R.id.account_tv_post_count);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -166,12 +167,12 @@ public class UserFragment extends Fragment {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                 followDTO = value.toObject(FollowDTO.class);
-                /*
-                if (followDTO.followingCount != 0){
+/*
+                if (followDTO.followingCount != null ){
                     account_tv_following_count.setText(String.valueOf(followDTO.followingCount));
                 }
 
-                if (followDTO.followerCount != 0){
+                if (followDTO.followerCount != null){
                     account_tv_follower_count.setText(String.valueOf(followDTO.followerCount));
 
                     //내가 팔로워를 하고 있으면면
@@ -181,7 +182,9 @@ public class UserFragment extends Fragment {
                        btn_follow.setText(getString(R.string.follow));
                    }
                 }
-                 */
+
+ */
+
             }
 
         });
@@ -305,6 +308,7 @@ public class UserFragment extends Fragment {
                     for(QueryDocumentSnapshot doc : value){
                         contentDTOS.add(doc.toObject(ContentDTO.class));
                     }
+                    account_post_count.setText(String.valueOf(contentDTOS.size()));
                     notifyDataSetChanged(); //새로고치ㅣㅁ되도록
                 }
             });
