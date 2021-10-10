@@ -15,13 +15,14 @@ public class ContentDTO{
     public long timestamp;
     public int favoriteCount;
     public Map<String, Boolean> favorities = new HashMap<>();
+    public Map<String, Comment> comments;
 
 
     //댓글
-    public class Comment{
-        String uid;  // 파이어베이스 uid
-        String userId; // 아이디(이메일)
-        String comment; // 댓글
-        long timestamp; // 타임스탬프
+    public static class Comment{
+        public String uid;
+        public String userId;
+        public String comment;
+        public long timestamp;
     }
 }

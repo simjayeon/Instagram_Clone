@@ -14,5 +14,5 @@ public class AlarmDTO {
     //2: 팔로우 알람
     public int kind;
     public String message;
-    public Long timestamp;
+    public long timestamp;
 }
