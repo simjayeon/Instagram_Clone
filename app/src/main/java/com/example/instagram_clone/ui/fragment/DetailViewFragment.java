@@ -101,6 +101,7 @@ public class DetailViewFragment extends Fragment {
 
             holder = ((CustomViewHolder) holder);
             ((CustomViewHolder) holder).detail_user_name.setText(contentDTOS.get(position).userId); //userName
+            //메인 프로필사진
             ///Glide.with(holder.itemView.getContext()).load(contentDTOS.get(position).imageUrl).into(((CustomViewHolder) holder).detail_profile_img); //프로필이미지
             Glide.with(holder.itemView.getContext()).load(contentDTOS.get(position).imageUrl).into(((CustomViewHolder) holder).detail_content_img); //콘텐츠이미지
             ((CustomViewHolder) holder).detail_favorit_count.setText(contentDTOS.get(position).favoriteCount + "명이 좋아합니다"); //userName
@@ -192,6 +193,7 @@ public class DetailViewFragment extends Fragment {
 
 
         //좋아요 누르기 이벤트
+        //좋아요 한번 ㄴ씩만 누를 수 있게 수정 필요
         public void favoritEvent(int position) {
             firestore = FirebaseFirestore.getInstance();
 

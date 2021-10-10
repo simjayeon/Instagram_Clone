@@ -1,30 +1,36 @@
 package com.example.instagram_clone.ui.fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaDrm;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.PagerAdapter;
 
 import com.bumptech.glide.Glide;
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.model.AlarmDTO;
 import com.example.instagram_clone.model.ContentDTO;
+import com.example.instagram_clone.model.FollowDTO;
 import com.example.instagram_clone.ui.activity.LoginActivity;
 import com.example.instagram_clone.ui.activity.MainActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -45,9 +51,11 @@ public class UserFragment extends Fragment {
     String uid, currentUserId, selectUid;
     ImageView btn_back, toolbar_logo, account_iv_profile;
     Button btn_follow;
-    TextView toolbar_user_id;
+    TextView toolbar_user_id, account_tv_following_count, account_tv_follower_count;
     BottomNavigationView bottomNavigationView;
     int PICK_PROFILE_FROM_ALBUM = 55;
+
+    FollowDTO followDTO = new FollowDTO();
 
 
     MainActivity mainActivity = new MainActivity();
@@ -70,6 +78,8 @@ public class UserFragment extends Fragment {
         toolbar_user_id = view.findViewById(R.id.toolbar_user_id);
         bottomNavigationView = view.findViewById(R.id.bottom_NaviBar);
         toolbar_logo = view.findViewById(R.id.toolbar_logo);
+        account_tv_following_count = view.findViewById(R.id.account_tv_following_count);
+        account_tv_follower_count = view.findViewById(R.id.account_tv_follower_count);
 
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,6 +111,7 @@ public class UserFragment extends Fragment {
         }else{
             //uid값 넘겨주기
             //otherUserpage
+            /*
             btn_follow.setText(R.string.follow);
 
             //메인액티비티 xml 가져와야함(오류)
@@ -112,6 +123,15 @@ public class UserFragment extends Fragment {
                     toolbar_logo.setVisibility(View.GONE);
                     toolbar_user_id.setVisibility(View.VISIBLE);
                     btn_back.setVisibility(View.VISIBLE);
+                }
+            });
+
+             */
+
+            btn_follow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    requestFollow();
                 }
             });
         }
@@ -132,12 +152,42 @@ public class UserFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(userFragmentAdapter);
         getProfileImage();
+        getFollowerAndFollowing();
 
         return view;
     }
 
 
-    //데이터베이스에서 이미지 가져오기
+    //팔로워 값 변경
+    public void getFollowerAndFollowing(){
+        firestore.collection("users").document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                followDTO = value.toObject(FollowDTO.class);
+                /*
+                if (followDTO.followingCount != 0){
+                    account_tv_following_count.setText(String.valueOf(followDTO.followingCount));
+                }
+
+                if (followDTO.followerCount != 0){
+                    account_tv_follower_count.setText(String.valueOf(followDTO.followerCount));
+
+                    //내가 팔로워를 하고 있으면면
+                   if(followDTO.followers.containsKey(currentUserId)){
+                       btn_follow.setText(getString(R.string.follow_cancel));
+                   }else{
+                       btn_follow.setText(getString(R.string.follow));
+                   }
+                }
+                 */
+            }
+
+        });
+    }
+
+
+
+    //데이터베이스에서 이미지 가져오기 (오류가 여기인가)
     public void getProfileImage(){
         firestore.collection("profileImages").document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -148,6 +198,67 @@ public class UserFragment extends Fragment {
                 }
             }
         });
+    }
+
+    //상대방 계정에는 또다른 팔로워
+    // 내 계정에는 상대방 누구를 팔로워 하는지
+    // 과정ㅇ의 트랜잭션
+    public void requestFollow(){
+        // ㅐㄴ 팔로워
+            firestore.runTransaction(transaction -> {
+                DocumentReference doFollowing = firestore.collection("users").document(currentUserId);
+                followDTO = transaction.get(doFollowing).toObject(FollowDTO.class);
+
+                System.out.println(currentUserId+"현재 아이디");
+
+
+                //조건 1
+                if(followDTO == null){
+                    System.out.println("여기 와? 조건 1");
+                    followDTO.followingCount = 1;
+                    followDTO.followers.put(uid, true);
+
+                    transaction.set(doFollowing, followDTO); //db에 담는 것
+                }
+
+                //조건 2
+                if(followDTO.followings.containsKey(uid)){
+                    System.out.println("여기 와? 조건 2에서 팔로워");
+                    //이미 팔로워 된 uid일 경우
+                    followDTO.followingCount = followDTO.followingCount - 1; //팔로워 취소
+                    followDTO.followers.remove(uid); //uid삭제
+                }else{
+                    //팔로워가 되어있지 않은 uid일 경우
+                    followDTO.followingCount = followDTO.followingCount + 1; //팔로워
+                    followDTO.followers.put(uid,true); //uid등록
+                }
+
+                return transaction.set(doFollowing, followDTO); //db에 저장
+            });
+
+            //내가 팔로잉 한 상대방 계정
+            DocumentReference doFollower = firestore.collection("users").document(uid);
+            System.out.println(uid+"uid 아이디");
+            firestore.runTransaction(transaction -> {
+                followDTO = transaction.get(doFollower).toObject(FollowDTO.class);
+                if(followDTO == null){
+                    followDTO.followerCount = 1;
+                    followDTO.followers.put(currentUserId, true);
+
+                    transaction.set(doFollower, followDTO);
+                }
+
+                if(followDTO.followers.containsKey(currentUserId)){
+                    System.out.println("여기 와? 조건 2에서 팔로우");
+                    followDTO.followerCount = followDTO.followerCount - 1;
+                    followDTO.followers.remove(currentUserId);
+                }else{
+                    followDTO.followerCount = followDTO.followerCount + 1;
+                    followDTO.followers.put(currentUserId, true);
+                }
+                return transaction.set(doFollower, followDTO);
+            });
+
     }
 
 
