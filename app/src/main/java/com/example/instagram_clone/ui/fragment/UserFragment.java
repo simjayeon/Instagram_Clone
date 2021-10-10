@@ -249,7 +249,7 @@ public class UserFragment extends Fragment {
                 if(followDTO == null){
                     followDTO.followerCount = 1;
                     followDTO.followers.put(currentUserId, true);
-
+                    followerAlarm(uid);
                     transaction.set(doFollower, followDTO);
                 }
 

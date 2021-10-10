@@ -12,7 +12,7 @@ public class AlarmDTO {
     //0: 좋아요 알람
     //1: 댓글 알람
     //2: 팔로우 알람
-    public int kind;
+    public Integer kind;
     public String message;
     public long timestamp;
 }

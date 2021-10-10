@@ -222,6 +222,8 @@ public class DetailViewFragment extends Fragment {
             });
         }
 
+
+
         //좋아요 알람
         public void favoriteAlarm(String destinationUid){
             AlarmDTO alarmDTO = new AlarmDTO();
