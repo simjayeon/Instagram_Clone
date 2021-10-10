@@ -25,11 +25,10 @@ import com.squareup.okhttp.internal.DiskLruCache;
 
 import java.util.ArrayList;
 
+import static android.view.View.VISIBLE;
+
 public class AlarmFragment extends Fragment {
-    RecyclerView alarmfragment_recyclerview;
     ArrayList<AlarmDTO> alarmDTO = new ArrayList<>();
-    TextView commentviewitem_imageview_profile;
-    TextView commentviewitem_textview_profile;
     TextView commentviewitem_textview_comment;
 
     @Nullable
@@ -57,9 +56,9 @@ public class AlarmFragment extends Fragment {
                     if(querySnapshot == null){
                     }
 
-                    for(querySnapshot in querySnapshot.getDocuments()){
+                    /*for(querySnapshot in querySnapshot.getDocuments()){
                         alarmDTOList.add(querySnapshot.toObjects(AlarmDTO.class));
-                    }
+                    }*/
 
                     notifyDataSetChanged();
                 }
@@ -70,7 +69,7 @@ public class AlarmFragment extends Fragment {
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(getContext()).inflate(R.layout.item_comment, parent, false);
-            return CustomViewHolder;
+            return new CustomViewHolder(view);
         }
         class CustomViewHolder extends RecyclerView.ViewHolder {
             public CustomViewHolder(@NonNull View itemView) {
@@ -87,7 +86,7 @@ public class AlarmFragment extends Fragment {
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             View view = holder.itemView;
 
-            FirebaseFirestore.getInstance().collection("profileImages").document(alarmDTOList.get(position).uid).get().addOnCompleteListener;
+            FirebaseFirestore.getInstance().collection("profileImages").document(alarmDTOList.get(position).uid).get().addOnCompleteListener(task -> )
 
             switch (alarmDTOList.get(position).kind){
                 case 0:
@@ -100,6 +99,7 @@ public class AlarmFragment extends Fragment {
                     String str_2 = alarmDTOList.get(position).userId + " " + getString(R.string.alarm_follow);
                     commentviewitem_textview_comment.setText(str_2);
             }
+            commentviewitem_textview_comment.setVisibility(VISIBLE);
         }
     }
 }
