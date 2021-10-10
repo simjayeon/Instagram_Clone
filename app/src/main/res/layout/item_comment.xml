@@ -3,6 +3,7 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="50dp">
+
     <ImageView
         android:id="@+id/commentviewitem_imageview_profile"
         android:layout_margin="7.5dp"

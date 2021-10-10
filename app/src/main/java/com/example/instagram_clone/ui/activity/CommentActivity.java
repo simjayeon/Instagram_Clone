@@ -91,6 +91,7 @@ public class CommentActivity extends AppCompatActivity {
         ArrayList<ContentDTO.Comment> commentList = new ArrayList<>();
 
         public CommentRecyclerViewAdapter(){
+
             FirebaseFirestore.getInstance().collection("images")
                     .document(contentUid)
                     .collection("comments")
