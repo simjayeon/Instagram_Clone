@@ -75,6 +75,7 @@ public class CommentActivity extends AppCompatActivity {
         AlarmDTO alarmDTO  = new AlarmDTO();
         alarmDTO.destinationUid = destinationUid;
         alarmDTO.userId = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        alarmDTO.kind = 1;
         alarmDTO.uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         alarmDTO.timestamp = System.currentTimeMillis();
         alarmDTO.message = message;
