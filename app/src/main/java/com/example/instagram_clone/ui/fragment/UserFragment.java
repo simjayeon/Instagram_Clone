@@ -158,6 +158,8 @@ public class UserFragment extends Fragment {
     }
 
 
+
+
     //팔로워 값 변경
     public void getFollowerAndFollowing(){
         firestore.collection("users").document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
