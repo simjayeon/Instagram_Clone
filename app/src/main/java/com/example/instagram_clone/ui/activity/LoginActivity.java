@@ -28,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth; // FirebaseAuth 객체의 공유 인스턴스
     private GoogleSignInClient googleSignInClient; // 구글
     private GoogleSignInOptions gso;
-
+    TextView btn_login, btn_signUp, btn_login_google;
     EditText edit_email, edit_password;
 
 
@@ -36,12 +36,16 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        firebaseAuth = FirebaseAuth.getInstance();
+
         edit_email = (EditText) findViewById(R.id.edit_email);
         edit_password = (EditText) findViewById(R.id.edit_password);
-        TextView btn_login = (TextView) findViewById(R.id.btn_login);
-        TextView btn_signUp = (TextView) findViewById(R.id.btn_signup);
-        TextView btn_login_google = (TextView) findViewById(R.id.btn_google);
+        btn_login = (TextView) findViewById(R.id.btn_login);
+        btn_signUp = (TextView) findViewById(R.id.btn_signup_start);
+        btn_login_google = (TextView) findViewById(R.id.btn_google);
+
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
 
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -84,25 +88,13 @@ public class LoginActivity extends AppCompatActivity {
         moveMainPage(firebaseAuth.getCurrentUser());
     }
 
-    //어떻게 나눌지
-    public void signUp(){
-        firebaseAuth.createUserWithEmailAndPassword(edit_email.getText().toString(), edit_password.getText().toString())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            //회원가입 성공시
-                            //FirebaseUser user = firebaseAuth.getCurrentUser();
-                            moveMainPage(task.getResult().getUser()); // 뭔지 알아내기
-                        }else{
-                            //회원가입 실패시
-                            //다이얼로그로 변경하기
-                            Toast.makeText(LoginActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
-                        }
 
-                    }
-                });
+    private void signUp() {
+        Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+        startActivity(intent);
     }
+
+
 
     public void signIn(){
         firebaseAuth.signInWithEmailAndPassword(edit_email.getText().toString(), edit_password.getText().toString())
@@ -121,10 +113,14 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
+
+
     public void googleLogin(){
         Intent intent = googleSignInClient.getSignInIntent(); //구글 클라이언트에서 로그인화면으로 이동
         startActivityForResult(intent, 1);
     }
+
+
 
     public void moveMainPage(FirebaseUser user){
         if (user != null){ //파이어베이스 유저상태가 있을 경우 아래 실행
@@ -134,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    //로그인 요청
+    //구글 로그인 요청
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -147,9 +143,7 @@ public class LoginActivity extends AppCompatActivity {
                     firebaseAuthWithGoogle(acct.getIdToken());
 
                 }catch (ApiException e){
-
                 }
-
             }else{
                 //로그인 실패일 경우
             }

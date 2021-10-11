@@ -149,9 +149,9 @@ public class CommentActivity extends AppCompatActivity {
 
             public CustomerViewHolder(View view) {
                 super(view);
-                comment_profile_img = view.findViewById(R.id.comment_profile_img);
-                comment_profile_id = view.findViewById(R.id.comment_profile_id);
-                comment_comment_txt = view.findViewById(R.id.comment_comment_txt);
+                comment_profile_img = view.findViewById(R.id.commentviewitem_imageview_profile);
+                comment_profile_id = view.findViewById(R.id.commentviewitem_textview_profile);
+                comment_comment_txt = view.findViewById(R.id.commentviewitem_textview_comment);
 
             }
         }

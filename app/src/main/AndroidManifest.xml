@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Instagram_Clone">
-        <activity android:name=".ui.activity.CommentActivity"></activity>
+        <activity android:name=".ui.activity.SignUpActivity"></activity>
+        <activity android:name=".ui.activity.CommentActivity" />
         <activity android:name=".ui.activity.AddPhotoActivity" />
         <activity android:name=".ui.activity.LoginActivity">
             <intent-filter>
@@ -23,14 +24,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activity.MainActivity" />
+
         <meta-data
             android:name="com.google.messaging.default_notification_icon"
-            android:resource="@drawable/push_icon"/>
+            android:resource="@drawable/push_icon" />
         <meta-data
             android:name="com.google.messaging.default_notification_color"
-            android:resource="@color/colorAccent"/>
+            android:resource="@color/colorAccent" />
     </application>
-
-
 
 </manifest>
