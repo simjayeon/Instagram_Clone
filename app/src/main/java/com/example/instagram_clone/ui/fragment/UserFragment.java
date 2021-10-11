@@ -37,6 +37,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -56,9 +57,6 @@ public class UserFragment extends Fragment {
     int PICK_PROFILE_FROM_ALBUM = 55;
 
     FollowDTO followDTO = new FollowDTO();
-
-
-    MainActivity mainActivity = new MainActivity();
 
     @Nullable
     @Override
@@ -161,7 +159,7 @@ public class UserFragment extends Fragment {
 
     //팔로워 값 변경
     public void getFollowerAndFollowing(){
-        firestore.collection("users").document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        firestore.collection("users").document(currentUserId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                 followDTO = value.toObject(FollowDTO.class);
@@ -208,29 +206,26 @@ public class UserFragment extends Fragment {
         // ㅐㄴ 팔로워
             firestore.runTransaction(transaction -> {
                 DocumentReference doFollowing = firestore.collection("users").document(currentUserId);
-                followDTO = transaction.get(doFollowing).toObject(FollowDTO.class);
-
-                System.out.println(currentUserId+"현재 아이디");
+                FollowDTO followDTO = transaction.get(doFollowing).toObject(FollowDTO.class);
 
                 //조건 1
                 if(followDTO == null){
-                    System.out.println("여기 와? 조건 1");
                     followDTO.followingCount = 1;
-                    followDTO.followers.put(uid, true);
+                    followDTO.followers.get(uid);
 
                     transaction.set(doFollowing, followDTO); //db에 담는 것
                 }
 
                 //조건 2
                 if(followDTO.followings.containsKey(uid)){
-                    System.out.println("여기 와? 조건 2에서 팔로워");
                     //이미 팔로워 된 uid일 경우
                     followDTO.followingCount = followDTO.followingCount - 1; //팔로워 취소
                     followDTO.followers.remove(uid); //uid삭제
                 }else{
                     //팔로워가 되어있지 않은 uid일 경우
                     followDTO.followingCount = followDTO.followingCount + 1; //팔로워
-                    followDTO.followers.put(uid,true); //uid등록
+                    followDTO.followers.get(uid); //uid등록
+                    followerAlarm(uid);
                 }
 
                 return transaction.set(doFollowing, followDTO); //db에 저장
@@ -238,30 +233,28 @@ public class UserFragment extends Fragment {
 
             //내가 팔로잉 한 상대방 계정
             DocumentReference doFollower = firestore.collection("users").document(uid);
-            System.out.println(uid+"uid 아이디");
             firestore.runTransaction(transaction -> {
                 followDTO = transaction.get(doFollower).toObject(FollowDTO.class);
                 if(followDTO == null){
                     followDTO.followerCount = 1;
-                    followDTO.followers.put(currentUserId, true);
-                    followerAlarm(uid);
+                    followDTO.followers.get(currentUserId);
                     transaction.set(doFollower, followDTO);
                 }
 
                 if(followDTO.followers.containsKey(currentUserId)){
-                    System.out.println("여기 와? 조건 2에서 팔로우");
                     followDTO.followerCount = followDTO.followerCount - 1;
                     followDTO.followers.remove(currentUserId);
                 }else{
                     followDTO.followerCount = followDTO.followerCount + 1;
-                    followDTO.followers.put(currentUserId, true);
+                    followDTO.followers.get(currentUserId);
+                    followerAlarm(currentUserId);
                 }
                 return transaction.set(doFollower, followDTO);
             });
 
     }
 
-    //이따가 설정
+    //팔로워 알람
     public void followerAlarm(String destinationUid){
         AlarmDTO alarmDTO = new AlarmDTO();
         alarmDTO.destinationUid = destinationUid;
@@ -277,9 +270,7 @@ public class UserFragment extends Fragment {
     public class UserFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         ArrayList<ContentDTO> contentDTOS;
-        ArrayList<String> contentUidList = new ArrayList<>();
         String uid;
 
         public UserFragmentAdapter(String uid){

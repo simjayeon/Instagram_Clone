@@ -28,8 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth; // FirebaseAuth 객체의 공유 인스턴스
     private GoogleSignInClient googleSignInClient; // 구글
     private GoogleSignInOptions gso;
-
-
+    TextView btn_login, btn_signUp, btn_login_google;
     EditText edit_email, edit_password;
 
 
@@ -37,12 +36,16 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        firebaseAuth = FirebaseAuth.getInstance();
+
         edit_email = (EditText) findViewById(R.id.edit_email);
         edit_password = (EditText) findViewById(R.id.edit_password);
-        TextView btn_login = (TextView) findViewById(R.id.btn_login);
-        TextView btn_signUp = (TextView) findViewById(R.id.btn_signup_start);
-        TextView btn_login_google = (TextView) findViewById(R.id.btn_google);
+        btn_login = (TextView) findViewById(R.id.btn_login);
+        btn_signUp = (TextView) findViewById(R.id.btn_signup_start);
+        btn_login_google = (TextView) findViewById(R.id.btn_google);
+
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
 
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -127,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    //로그인 요청
+    //구글 로그인 요청
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

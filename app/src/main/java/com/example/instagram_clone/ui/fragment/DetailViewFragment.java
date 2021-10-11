@@ -27,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 
 import java.util.ArrayList;
 
@@ -36,7 +37,6 @@ public class DetailViewFragment extends Fragment {
     RecyclerView recyclerView;
     RecyclerViewAdapter recyclerViewAdapter;
     ArrayList<ContentDTO> contentDTOS = new ArrayList<>();
-    ArrayList<String> contentUidList = new ArrayList<>();
     Fragment fragment_user = new UserFragment();
 
     @Nullable
@@ -51,7 +51,6 @@ public class DetailViewFragment extends Fragment {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(recyclerViewAdapter);
-
 
         return view;
     }
@@ -190,8 +189,6 @@ public class DetailViewFragment extends Fragment {
 
 
 
-
-
         //좋아요 누르기 이벤트
         //좋아요 한번 ㄴ씩만 누를 수 있게 수정 필요
         public void favoritEvent(int position) {
@@ -202,7 +199,8 @@ public class DetailViewFragment extends Fragment {
                 ContentDTO contentDTO = transaction.get(firestore.collection("images")
                         .document(contentUidList.get(position))).toObject(ContentDTO.class);
 
-                if (contentDTO.favorities.containsKey(uid)) {
+
+                if (contentDTO.favorities.containsKey(uid) ) {
                     //좋아요가 눌렸을 때 - 좋아요를 취소하는 이벤트
                     //눌린 상태여서 취소해야하기 때문에 좋아요 개수 -1과 좋아요 누른 유저의 정보를 삭제해야함
                     contentDTO.favoriteCount = contentDTO.favoriteCount - 1;
