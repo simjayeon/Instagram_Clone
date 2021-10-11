@@ -73,7 +73,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/btn_signup"
+            android:id="@+id/btn_signup_start"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="10dp"

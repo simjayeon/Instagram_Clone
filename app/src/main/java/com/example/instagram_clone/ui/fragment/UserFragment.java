@@ -3,6 +3,7 @@ package com.example.instagram_clone.ui.fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaDrm;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +42,8 @@ import com.google.firebase.firestore.Transaction;
 
 import java.util.ArrayList;
 import java.util.Map;
+
+import static android.app.Activity.RESULT_OK;
 
 public class UserFragment extends Fragment {
 
@@ -155,7 +158,13 @@ public class UserFragment extends Fragment {
         return view;
     }
 
-
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == PICK_PROFILE_FROM_ALBUM && resultCode == RESULT_OK){
+            getProfileImage();
+        }
+    }
 
     //팔로워 값 변경
     public void getFollowerAndFollowing(){

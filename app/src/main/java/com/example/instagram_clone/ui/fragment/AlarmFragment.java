@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.view.menu.MenuView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -55,24 +56,25 @@ public class AlarmFragment extends Fragment {
 
             FirebaseFirestore.getInstance().collection("alarms").whereEqualTo("destinationId", uid)
                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                    QuerySnapshot querySnapshot = null;
-                    final DocumentReference docRef = firestore.collection("alarms").document();
-                    querySnapshot.getDocuments();
-                    alarmDTOArrayList.clear();
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                            /*
+                            QuerySnapshot querySnapshot = null;
+                            final DocumentReference docRef = firestore.collection("alarms").document();
+                            querySnapshot.getDocuments();
+                            alarmDTOArrayList.clear();
 
-                    if(querySnapshot == null){
-                    }
+                            if(querySnapshot == null){
+                            }
 
-                    /*for(alarmDTOArrayList : querySnapshot)
+                    for(alarmDTOArrayList : querySnapshot)
                     {
                         alarmDTOArrayList.add(docRef.toObject(AlarmDTO.class));
                         System.out.println("오느냐..4");
                     }*/
-                    notifyDataSetChanged();
-                }
-            });
+                            notifyDataSetChanged();
+                        }
+                    });
         }
 
         @NonNull
@@ -96,6 +98,7 @@ public class AlarmFragment extends Fragment {
             FirebaseFirestore.getInstance().collection("profileImages")
                     .document(alarmDTOArrayList.get(position).uid).get().addOnCompleteListener(task -> {
                 String url = task.getResult().toString();
+                //centerCrop : 비율을 유지하며 가운데를 중심으로 자른다 (이미지 스케일을 조절)
                 Glide.with(getActivity()).load(url).centerCrop().into(profileImage);
             });
             System.out.println("오느냐..8");
