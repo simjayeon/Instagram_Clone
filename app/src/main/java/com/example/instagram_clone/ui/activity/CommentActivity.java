@@ -109,7 +109,7 @@ public class CommentActivity extends AppCompatActivity {
                             for (QueryDocumentSnapshot doc : value) {
                                 commentList.add(doc.toObject(ContentDTO.Comment.class));
                             }
-                            notifyDataSetChanged(); //새로고치ㅣㅁ되도록
+                            notifyDataSetChanged(); //새로고침
                         }
                     });
         }
@@ -153,9 +153,9 @@ public class CommentActivity extends AppCompatActivity {
 
             public CustomerViewHolder(View view) {
                 super(view);
-                comment_profile_img = view.findViewById(R.id.commentviewitem_imageview_profile);
-                comment_profile_id = view.findViewById(R.id.commentviewitem_textview_profile);
-                comment_comment_txt = view.findViewById(R.id.commentviewitem_textview_comment);
+                comment_profile_img = view.findViewById(R.id.commentItem_profileImg);
+                comment_profile_id = view.findViewById(R.id.commentItem_userId);
+                comment_comment_txt = view.findViewById(R.id.commentItem_text);
 
             }
         }
