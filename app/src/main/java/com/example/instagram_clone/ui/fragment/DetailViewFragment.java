@@ -97,8 +97,6 @@ public class DetailViewFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-
-            holder = ((CustomViewHolder) holder);
             ((CustomViewHolder) holder).detail_user_name.setText(contentDTOS.get(position).userId); //userName
             //메인 프로필사진
             ///Glide.with(holder.itemView.getContext()).load(contentDTOS.get(position).imageUrl).into(((CustomViewHolder) holder).detail_profile_img); //프로필이미지

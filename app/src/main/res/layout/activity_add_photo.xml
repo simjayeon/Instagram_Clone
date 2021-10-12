@@ -18,12 +18,18 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/toolbar"
+        android:background="@color/colorLightGray"/>
+
 
     <ImageView
         android:id="@+id/imgView_photo"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_below="@id/toolbar"/>
+        android:layout_height="200dp"
+        android:layout_below="@id/toolbar" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/layout"

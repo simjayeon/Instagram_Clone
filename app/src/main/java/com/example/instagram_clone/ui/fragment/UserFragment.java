@@ -158,13 +158,6 @@ public class UserFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == PICK_PROFILE_FROM_ALBUM && resultCode == RESULT_OK){
-            getProfileImage();
-        }
-    }
 
     //팔로워 값 변경
     public void getFollowerAndFollowing(){
@@ -202,11 +195,12 @@ public class UserFragment extends Fragment {
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                 if(value.getData() != null){
                     String url = value.getData().toString();
-                    Glide.with(getActivity()).load(url).centerCrop().into(account_iv_profile);
+                    Glide.with(getActivity()).load(url).centerCrop().crossFade().into(account_iv_profile);
                 }
             }
         });
     }
+
 
     //상대방 계정에는 또다른 팔로워
     // 내 계정에는 상대방 누구를 팔로워 하는지
@@ -334,10 +328,12 @@ public class UserFragment extends Fragment {
 
         private class CustomViewHolder extends RecyclerView.ViewHolder {
             ImageView imageView;
+            ImageView imageView_profile;
 
             public CustomViewHolder(ImageView imageView) {
                 super(imageView);
                 this.imageView = imageView; //??
+                imageView_profile = imageView.findViewById(R.id.account_iv_profile);
 
             }
         }

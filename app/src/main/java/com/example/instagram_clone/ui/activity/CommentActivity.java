@@ -50,6 +50,9 @@ public class CommentActivity extends AppCompatActivity {
         comment_message = findViewById(R.id.comment_message_edit);
         commentRecyclerView = findViewById(R.id.comment_recycler_view);
         btn_send = findViewById(R.id.btn_send);
+
+
+        //댓글 올리기
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,6 +62,7 @@ public class CommentActivity extends AppCompatActivity {
                 comments.timestamp = System.currentTimeMillis();
 
                 FirebaseFirestore.getInstance().collection("images").document(contentUid).collection("comments").document().set(comments);
+
                 commentAlarm(destinationUid, comment_message.getText().toString());
                 comment_message.setText(""); //데이터 보낸 후 초기화
             }
@@ -71,6 +75,7 @@ public class CommentActivity extends AppCompatActivity {
 
     }
 
+    //댓글 알림 기능
     public void commentAlarm(String destinationUid, String message){
         AlarmDTO alarmDTO  = new AlarmDTO();
         alarmDTO.destinationUid = destinationUid;
@@ -118,9 +123,8 @@ public class CommentActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            holder = ((CustomerViewHolder)holder);
-            ((CustomerViewHolder) holder).comment_profile_id.setText(commentList.get(position).userId);
             ((CustomerViewHolder) holder).comment_comment_txt.setText(commentList.get(position).comment);
+            ((CustomerViewHolder) holder).comment_profile_id.setText(commentList.get(position).userId);
 
             RecyclerView.ViewHolder finalHolder = holder;
             FirebaseFirestore.getInstance().collection("profileImages")
