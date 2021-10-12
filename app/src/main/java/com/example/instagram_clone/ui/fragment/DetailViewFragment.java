@@ -113,7 +113,7 @@ public class DetailViewFragment extends Fragment {
                 }
             });
 
-            //좋아요 하트 채워지기 이벤트(수정필요)
+            //좋아요 하트 채워지기 이벤트
             if (contentDTOS.get(position).favorities.containsKey(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                 ((CustomViewHolder) holder).btn_favorite.setImageResource(R.drawable.ic_favorite);
             } else {
@@ -129,7 +129,7 @@ public class DetailViewFragment extends Fragment {
                     System.out.println(contentDTOS.get(position).userId + "userId랑 uid랑" + contentDTOS.get(position).uid);
                     fragment_user.setArguments(bundle);
 
-                    //getActivity값을 못 받아옴
+
                     if (getActivity() != null) {
                         getActivity()
                                 .getSupportFragmentManager()

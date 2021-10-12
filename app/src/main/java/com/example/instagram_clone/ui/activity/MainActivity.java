@@ -68,9 +68,7 @@ public class MainActivity extends AppCompatActivity {
         fragment_detail = new DetailViewFragment();
         fragment_grid = new GridFragment();
 
-        btn_back =findViewById(R.id.btn_back);
         btn_follow = findViewById(R.id.btn_follow);
-        toolbar_user_id = findViewById(R.id.toolbar_user_id);
         toolbar_logo = findViewById(R.id.toolbar_logo);
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_NaviBar);
@@ -79,25 +77,20 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.action_home:
-                        setToolbarDefault();
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_detail).commit();
                         return true;
                     case R.id.action_search:
-                        setToolbarDefault();
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_grid).commit();
                         return true;
                     case R.id.action_add_photo:
-                        setToolbarDefault();
                         if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == getPackageManager().PERMISSION_GRANTED){
                             startActivity(new Intent(MainActivity.this, AddPhotoActivity.class));
                         }
                         return true;
                     case R.id.action_favorite_alarm:
-                        setToolbarDefault();
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_alarm).commit();
                         return true;
                     case R.id.action_account:
-                        setToolbarDefault();
                         //uid값 넘겨주기
                         Bundle bundle = new Bundle();
                         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -115,11 +108,6 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.action_home);
     }
 
-    public void setToolbarDefault(){
-        toolbar_user_id.setVisibility(View.GONE);
-        btn_back.setVisibility(View.GONE);
-        toolbar_logo.setVisibility(View.VISIBLE);
-    }
 
 
     //데이터베이스에 프로필 이미지 올리기
@@ -134,9 +122,11 @@ public class MainActivity extends AppCompatActivity {
             storageRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    String uri = storageRef.getDownloadUrl().toString();
+                    //uri인지 url인지 수정 필요
+                    String url = storageRef.getDownloadUrl().toString();
                     Map<String, Object> map = new HashMap<String, Object>();
-                    map.put(uid, uri);
+                    map.put(uid, url);
+                    System.out.println(url+"머라구나오늬");
                     FirebaseFirestore.getInstance().collection("profileImages").document(uid).set(map);
                 }
             });

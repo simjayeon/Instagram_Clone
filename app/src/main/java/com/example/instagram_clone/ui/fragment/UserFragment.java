@@ -77,10 +77,8 @@ public class UserFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.account_recyclerView);
         userFragmentAdapter = new UserFragmentAdapter(uid);
-        btn_back = view.findViewById(R.id.btn_back);
         btn_follow = view.findViewById(R.id.btn_follow);
         account_iv_profile = view.findViewById(R.id.account_iv_profile);
-        toolbar_user_id = view.findViewById(R.id.toolbar_user_id);
         bottomNavigationView = view.findViewById(R.id.bottom_NaviBar);
         toolbar_logo = view.findViewById(R.id.toolbar_logo);
         account_tv_following_count = view.findViewById(R.id.account_tv_following_count);

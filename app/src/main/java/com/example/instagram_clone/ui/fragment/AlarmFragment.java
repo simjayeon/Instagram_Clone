@@ -63,12 +63,14 @@ public class AlarmFragment extends Fragment {
                         @Override
                         public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
 
-                            value.getDocuments();
+                            //value.getDocuments();
                             alarmDTOArrayList.clear();
 
                             if(value == null){
+
                             }
 
+                            //Query
                             for(QueryDocumentSnapshot doc : value)
                             {
                                 AlarmRecyclerviewAdapter.this.alarmDTOArrayList.add(doc.toObject(AlarmDTO.class));
@@ -92,7 +94,9 @@ public class AlarmFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            ((CustomViewHolder)holder).commentviewitem_textview_profile.setVisibility(View.GONE);
+            ((CustomViewHolder)holder).comment_profile_id.setVisibility(View.GONE);
+
+            /*
             FirebaseFirestore.getInstance().collection("profileImages")
                     .document(alarmDTOArrayList.get(position).uid).get().addOnCompleteListener(task -> {
                 String url = task.getResult().toString();
@@ -100,36 +104,41 @@ public class AlarmFragment extends Fragment {
                 Glide.with(getActivity()).load(url).centerCrop()
                         .into(((CustomViewHolder)holder).commentviewitem_imageview_profile);
             });
+
+             */
+
+
+            //alarmDTOArrayList라는 위치의 kind
             switch (alarmDTOArrayList.get(position).kind){
                 case 0:
-                    ((CustomViewHolder)holder).commentviewitem_imageview_profile.setImageResource(R.drawable.noun_like_1638902);
+                    ((CustomViewHolder)holder).comment_profile_img.setImageResource(R.drawable.noun_like_1638902);
                     String str_0 = alarmDTOArrayList.get(position).userId  + " " +  getString(R.string.alarm_favorite);
-                    ((CustomViewHolder) holder).commentviewitem_textview_comment.setText(str_0);
+                    ((CustomViewHolder) holder).comment_comment_txt.setText(str_0);
                     break;
                 case 1:
-                    ((CustomViewHolder)holder).commentviewitem_imageview_profile.setImageResource(R.drawable.noun_commend);
+                    ((CustomViewHolder)holder).comment_profile_img.setImageResource(R.drawable.noun_commend);
                     String str_1 = alarmDTOArrayList.get(position).userId + " " + getString(R.string.alarm_comment) + " of " + "\"" + alarmDTOArrayList.get(position).message + "\"";
-                    ((CustomViewHolder) holder).commentviewitem_textview_comment.setText(str_1);
+                    ((CustomViewHolder) holder).comment_comment_txt.setText(str_1);
                     break;
                 case 2:
-                    ((CustomViewHolder)holder).commentviewitem_imageview_profile.setImageResource(R.drawable.user);
+                    ((CustomViewHolder)holder).comment_profile_img.setImageResource(R.drawable.user);
                     String str_2 = alarmDTOArrayList.get(position).userId + " " + getString(R.string.alarm_follow);
-                    ((CustomViewHolder) holder).commentviewitem_textview_comment.setText(str_2);
+                    ((CustomViewHolder) holder).comment_comment_txt.setText(str_2);
                     break;
             }
         }
 
 
         private class CustomViewHolder extends RecyclerView.ViewHolder {
-            ImageView commentviewitem_imageview_profile;
-            TextView commentviewitem_textview_profile;
-            TextView commentviewitem_textview_comment;
+            ImageView comment_profile_img;
+            TextView comment_profile_id;
+            TextView comment_comment_txt;
 
             public CustomViewHolder(@NonNull View itemView) {
                 super(itemView);
-                commentviewitem_imageview_profile = itemView.findViewById(R.id.commentviewitem_imageview_profile);
-                commentviewitem_textview_profile = itemView.findViewById(R.id.commentviewitem_textview_profile);
-                commentviewitem_textview_comment = itemView.findViewById(R.id.commentviewitem_textview_comment);
+                comment_profile_img = itemView.findViewById(R.id.commentItem_profileImg);
+                comment_profile_id = itemView.findViewById(R.id.commentItem_userId);
+                comment_comment_txt = itemView.findViewById(R.id.commentItem_text);
             }
         }
     }
