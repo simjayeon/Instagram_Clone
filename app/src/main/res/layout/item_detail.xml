@@ -36,13 +36,13 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/colorLightGray"/>
-    
+
     <ImageView
         android:id="@+id/detail_content_img"
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:scaleType="fitXY"/>
-    
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
