@@ -30,12 +30,10 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-
         firebaseAuth = FirebaseAuth.getInstance();
         sign_up_edit_email = (EditText) findViewById(R.id.sign_up_edit_email);
         sign_up_edit_password = (EditText) findViewById(R.id.sign_up_edit_password);
         btn_signUp = (TextView) findViewById(R.id.btn_signup);
-
 
         btn_signUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,7 +43,6 @@ public class SignUpActivity extends AppCompatActivity {
         });
 
     }
-
 
 
     //회원가입 메소드
@@ -65,7 +62,6 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
 
-
     //로그인 페이지로 이동
     private void moveMainPage(FirebaseUser user) {
         if(user != null){
@@ -74,8 +70,6 @@ public class SignUpActivity extends AppCompatActivity {
             finish();
         }
     }
-
-
 
 
     //뒤로가기 시 나타나는 이벤트

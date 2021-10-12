@@ -104,7 +104,9 @@ public class GridFragment extends Fragment {
 
             //폭의 값을 이미지뷰에 넣음 (정사각형 이미지)
             //getContext는 추상클래스, 애플리케이션의 현재 상태
+            //parent는 RecyclerView
             ImageView imageView = new ImageView(parent.getContext());
+            //3*3
             imageView.setLayoutParams(new LinearLayoutCompat.LayoutParams(width, width));
 
             return new CustomViewHolder(imageView);

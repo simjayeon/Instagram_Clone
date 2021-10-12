@@ -82,7 +82,8 @@ public class DetailViewFragment extends Fragment {
                         RecyclerViewAdapter.this.contentDTOS.add(doc.toObject(ContentDTO.class));
                         contentUidList.add(doc.getId());
                     }
-                    notifyDataSetChanged(); //새로고치ㅣㅁ되도록
+                    //Adapter에게 RecyclerView의 리스트 데이터가 바뀌었으니 모든 항목을 업데이트하라는 신호가 전달됨
+                    notifyDataSetChanged(); //새로고침
                 }
             });
         }
@@ -97,8 +98,6 @@ public class DetailViewFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-
-            holder = ((CustomViewHolder) holder);
             ((CustomViewHolder) holder).detail_user_name.setText(contentDTOS.get(position).userId); //userName
             //메인 프로필사진
             ///Glide.with(holder.itemView.getContext()).load(contentDTOS.get(position).imageUrl).into(((CustomViewHolder) holder).detail_profile_img); //프로필이미지
@@ -138,15 +137,12 @@ public class DetailViewFragment extends Fragment {
                                 .replace(R.id.main_content, fragment_user)
                                 .addToBackStack(null)
                                 .commit();
-                    } else {
-                        System.out.println(getActivity() + "값 안옴");
                     }
                 }
             });
 
 
             /*댓글 버튼 누르면 실행되는 이벤트*/
-
             ((CustomViewHolder) holder).btn_comment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -164,7 +160,7 @@ public class DetailViewFragment extends Fragment {
         public int getItemCount() {
             return contentDTOS.size();
         }
-
+        //뷰홀더
         private class CustomViewHolder extends RecyclerView.ViewHolder {
             ImageView detail_profile_img;
             ImageView detail_content_img;
@@ -190,7 +186,6 @@ public class DetailViewFragment extends Fragment {
 
 
         //좋아요 누르기 이벤트
-        //좋아요 한번 ㄴ씩만 누를 수 있게 수정 필요
         public void favoritEvent(int position) {
             firestore = FirebaseFirestore.getInstance();
 
@@ -199,22 +194,22 @@ public class DetailViewFragment extends Fragment {
                 ContentDTO contentDTO = transaction.get(firestore.collection("images")
                         .document(contentUidList.get(position))).toObject(ContentDTO.class);
 
-
-                if (contentDTO.favorities.containsKey(uid) ) {
+                //맵에서 인자로 보낸 키 -> containsKey
+                if (contentDTO.favorities.containsKey(uid)) {
                     //좋아요가 눌렸을 때 - 좋아요를 취소하는 이벤트
-                    //눌린 상태여서 취소해야하기 때문에 좋아요 개수 -1과 좋아요 누른 유저의 정보를 삭제해야함
+                    //눌린 상태여서 취소해야하기 때문에 좋아요 개수 -1과 좋아요 누른 유저의 정보를 삭제해야 함
                     contentDTO.favoriteCount = contentDTO.favoriteCount - 1;
                     contentDTO.favorities.remove(uid);
                 } else {
                     //좋아요가 눌려있지 않을 때 - 좋아요를 누르는 이벤트
                     //좋아요가 눌리지 않은 상태라서 좋아요를 누르면 개수 +1과 좋아요 누른 유저의 정보가 등록되어야 함
                     contentDTO.favoriteCount = contentDTO.favoriteCount + 1;
-                    contentDTO.favorities.get(uid);
+                    //누른 사람의 uid를 contentDTO.favorities에 put 해야 구분할 수 있음
+                    contentDTO.favorities.put(uid, true);
                     favoriteAlarm(contentDTOS.get(position).uid); //카운터가 올라가는 사람이름 알림
                 }
 
-                //트랜잭션을 다시 서버로 돌려준다.\
-
+                //트랜잭션을 다시 서버로 돌려준다.
                 return transaction.set(firestore.collection("images")
                         .document(contentUidList.get(position)), contentDTO);
             });
