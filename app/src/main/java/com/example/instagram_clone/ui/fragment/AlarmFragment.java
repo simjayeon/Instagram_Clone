@@ -17,8 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.model.AlarmDTO;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +33,8 @@ import java.util.ArrayList;
 
 public class AlarmFragment extends Fragment {
     RecyclerView alarmfragment_recyclerview;
+    String uid;
+    FirebaseFirestore firestore;
 
     @Nullable
     @Override
@@ -42,11 +42,8 @@ public class AlarmFragment extends Fragment {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_alarm,container,false);
 
         alarmfragment_recyclerview = view.findViewById(R.id.alarmfragment_recyclerview);
-
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
-        AlarmRecyclerviewAdapter alarmRecyclerviewAdapter = new AlarmRecyclerviewAdapter();
-        alarmfragment_recyclerview.setAdapter(alarmRecyclerviewAdapter);
-        alarmfragment_recyclerview.setLayoutManager(layoutManager);
+        alarmfragment_recyclerview.setAdapter(new AlarmRecyclerviewAdapter());
+        alarmfragment_recyclerview.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         return view;
     }
@@ -57,22 +54,24 @@ public class AlarmFragment extends Fragment {
         public AlarmRecyclerviewAdapter() {
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-            //whereEqualTo("destinationUid", uid) -> collection 속 alarms의 uid와 현재 접속한 사용자의 uid가 같을 때의 값을 가져옴
-            FirebaseFirestore.getInstance().collection("alarms").whereEqualTo("destinationUid", uid)
+            FirebaseFirestore.getInstance().collection("alarms").whereEqualTo("destinationId", uid)
                     .addSnapshotListener(new EventListener<QuerySnapshot>() {
                         @Override
                         public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-
-                            value.getDocuments();
+                            /*
+                            QuerySnapshot querySnapshot = null;
+                            final DocumentReference docRef = firestore.collection("alarms").document();
+                            querySnapshot.getDocuments();
                             alarmDTOArrayList.clear();
 
-                            if(value == null){
+                            if(querySnapshot == null){
                             }
 
-                            for(QueryDocumentSnapshot doc : value)
-                            {
-                                AlarmRecyclerviewAdapter.this.alarmDTOArrayList.add(doc.toObject(AlarmDTO.class));
-                            }
+                    for(alarmDTOArrayList : querySnapshot)
+                    {
+                        alarmDTOArrayList.add(docRef.toObject(AlarmDTO.class));
+                        System.out.println("오느냐..4");
+                    }*/
                             notifyDataSetChanged();
                         }
                     });
@@ -82,51 +81,48 @@ public class AlarmFragment extends Fragment {
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_comment, parent, false);
+            System.out.println("오느냐..5");
             return new CustomViewHolder(view);
         }
 
         @Override
         public int getItemCount() {
+            System.out.println("오느냐..6!!"+alarmDTOArrayList.size());
             return alarmDTOArrayList.size();
         }
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            ((CustomViewHolder)holder).commentviewitem_textview_profile.setVisibility(View.GONE);
+            ImageView profileImage = ((CustomViewHolder) holder).commentviewitem_imageview_profile;
+            System.out.println("오느냐..7");
             FirebaseFirestore.getInstance().collection("profileImages")
                     .document(alarmDTOArrayList.get(position).uid).get().addOnCompleteListener(task -> {
                 String url = task.getResult().toString();
                 //centerCrop : 비율을 유지하며 가운데를 중심으로 자른다 (이미지 스케일을 조절)
-                Glide.with(getActivity()).load(url).centerCrop()
-                        .into(((CustomViewHolder)holder).commentviewitem_imageview_profile);
+                Glide.with(getActivity()).load(url).centerCrop().into(profileImage);
             });
+            System.out.println("오느냐..8");
             switch (alarmDTOArrayList.get(position).kind){
                 case 0:
-                    ((CustomViewHolder)holder).commentviewitem_imageview_profile.setImageResource(R.drawable.noun_like_1638902);
-                    String str_0 = alarmDTOArrayList.get(position).userId  + " " +  getString(R.string.alarm_favorite);
+                    String str_0 = alarmDTOArrayList.get(position).userId + getString(R.string.alarm_favorite);
                     ((CustomViewHolder) holder).commentviewitem_textview_comment.setText(str_0);
-                    break;
                 case 1:
-                    ((CustomViewHolder)holder).commentviewitem_imageview_profile.setImageResource(R.drawable.noun_commend);
-                    String str_1 = alarmDTOArrayList.get(position).userId + " " + getString(R.string.alarm_comment) + " of " + "\"" + alarmDTOArrayList.get(position).message + "\"";
+                    String str_1 = alarmDTOArrayList.get(position).userId + " " + getString(R.string.alarm_comment) + " of " + alarmDTOArrayList.get(position).message;
                     ((CustomViewHolder) holder).commentviewitem_textview_comment.setText(str_1);
-                    break;
                 case 2:
-                    ((CustomViewHolder)holder).commentviewitem_imageview_profile.setImageResource(R.drawable.user);
                     String str_2 = alarmDTOArrayList.get(position).userId + " " + getString(R.string.alarm_follow);
                     ((CustomViewHolder) holder).commentviewitem_textview_comment.setText(str_2);
-                    break;
             }
         }
 
 
-        private class CustomViewHolder extends RecyclerView.ViewHolder {
+        class CustomViewHolder extends RecyclerView.ViewHolder {
             ImageView commentviewitem_imageview_profile;
             TextView commentviewitem_textview_profile;
             TextView commentviewitem_textview_comment;
-
             public CustomViewHolder(@NonNull View itemView) {
                 super(itemView);
+                System.out.println("오느냐..9");
                 commentviewitem_imageview_profile = itemView.findViewById(R.id.commentviewitem_imageview_profile);
                 commentviewitem_textview_profile = itemView.findViewById(R.id.commentviewitem_textview_profile);
                 commentviewitem_textview_comment = itemView.findViewById(R.id.commentviewitem_textview_comment);
