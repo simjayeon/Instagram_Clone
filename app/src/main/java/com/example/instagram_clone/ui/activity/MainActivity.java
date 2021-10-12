@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.action_account:
                         setToolbarDefault();
                         //uid값 넘겨주기
-                        Bundle bundle = new Bundle(); //??
+                        Bundle bundle = new Bundle();
                         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                         bundle.putString("destinationUid", uid);
                         fragment_user.setArguments(bundle);
