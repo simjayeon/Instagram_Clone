@@ -14,7 +14,9 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/logo_title"/>
+            android:src="@drawable/logo_title"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
 
     </androidx.appcompat.widget.Toolbar>
 
@@ -24,12 +26,11 @@
         android:layout_below="@id/toolbar"
         android:background="@color/colorLightGray"/>
 
-
     <ImageView
         android:id="@+id/imgView_photo"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_below="@id/toolbar" />
+        android:layout_below="@id/toolbar"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/layout"
@@ -41,11 +42,12 @@
             android:id="@+id/edit_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="내용을 입력하세요."/>
+            android:hint="내용을 입력하세요."
+            android:inputType="text"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
+    <Button
         android:id="@+id/btn_upload"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -54,9 +56,6 @@
         android:textAlignment="center"
         android:gravity="center"
         android:padding="10dp"
-        android:background="#9FDAF4"
         android:layout_below="@id/layout"/>
-
-
 
 </RelativeLayout>

@@ -1,6 +1,5 @@
 package com.example.instagram_clone.ui.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,26 +9,18 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.view.menu.MenuView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.model.AlarmDTO;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.squareup.okhttp.internal.DiskLruCache;
 
 import java.util.ArrayList;
 
@@ -63,14 +54,12 @@ public class AlarmFragment extends Fragment {
                         @Override
                         public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
 
-                            //value.getDocuments();
+                            value.getDocuments();
                             alarmDTOArrayList.clear();
 
                             if(value == null){
-
                             }
 
-                            //Query
                             for(QueryDocumentSnapshot doc : value)
                             {
                                 AlarmRecyclerviewAdapter.this.alarmDTOArrayList.add(doc.toObject(AlarmDTO.class));
@@ -95,20 +84,13 @@ public class AlarmFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             ((CustomViewHolder)holder).comment_profile_id.setVisibility(View.GONE);
-
-            /*
-            FirebaseFirestore.getInstance().collection("profileImages")
+            /*FirebaseFirestore.getInstance().collection("profileImages")
                     .document(alarmDTOArrayList.get(position).uid).get().addOnCompleteListener(task -> {
                 String url = task.getResult().toString();
                 //centerCrop : 비율을 유지하며 가운데를 중심으로 자른다 (이미지 스케일을 조절)
                 Glide.with(getActivity()).load(url).centerCrop()
-                        .into(((CustomViewHolder)holder).commentviewitem_imageview_profile);
-            });
-
-             */
-
-
-            //alarmDTOArrayList라는 위치의 kind
+                        .into(((CustomViewHolder)holder).comment_profile_img);
+            });*/
             switch (alarmDTOArrayList.get(position).kind){
                 case 0:
                     ((CustomViewHolder)holder).comment_profile_img.setImageResource(R.drawable.noun_like_1638902);

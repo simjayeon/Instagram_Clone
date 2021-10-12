@@ -1,12 +1,9 @@
 package com.example.instagram_clone.ui.activity;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +11,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toolbar;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.model.AlarmDTO;
 import com.example.instagram_clone.model.ContentDTO;
-import com.example.instagram_clone.ui.fragment.DetailViewFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -31,12 +32,12 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 
 public class CommentActivity extends AppCompatActivity {
-
     Button btn_send;
     ContentDTO.Comment comments = new ContentDTO.Comment();
     EditText comment_message;
     String contentUid, destinationUid;
     RecyclerView commentRecyclerView;
+    String message;
 
 
     @Override
@@ -51,6 +52,27 @@ public class CommentActivity extends AppCompatActivity {
         commentRecyclerView = findViewById(R.id.comment_recycler_view);
         btn_send = findViewById(R.id.btn_send);
 
+        comment_message.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                message = comment_message.getText().toString();
+                if(message.length() == 0){
+                    btn_send.setEnabled(false);
+                    btn_send.setBackgroundColor(Color.GRAY);
+                } else {
+                    btn_send.setEnabled(true);
+                    btn_send.setBackgroundColor(Color.BLUE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
 
         //댓글 올리기
         btn_send.setOnClickListener(new View.OnClickListener() {
@@ -86,10 +108,6 @@ public class CommentActivity extends AppCompatActivity {
         alarmDTO.message = message;
         FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO);
     }
-
-
-
-
 
     public class CommentRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
@@ -156,7 +174,6 @@ public class CommentActivity extends AppCompatActivity {
                 comment_profile_img = view.findViewById(R.id.commentItem_profileImg);
                 comment_profile_id = view.findViewById(R.id.commentItem_userId);
                 comment_comment_txt = view.findViewById(R.id.commentItem_text);
-
             }
         }
     }

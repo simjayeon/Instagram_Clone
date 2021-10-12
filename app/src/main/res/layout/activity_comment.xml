@@ -7,18 +7,20 @@
     tools:context=".ui.activity.CommentActivity">
 
         <!-- 상단 툴바  -->
-
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/comment_toolbar"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            app:contentInsetStart="0dp">
+            app:contentInsetStart="0dp"
+            android:layout_marginTop="4dp">
 
                 <ImageView
                     android:id="@+id/comment_toolbar_logo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/logo_title"/>
+                    android:src="@drawable/logo_title"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"/>
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -48,15 +50,9 @@
         android:id="@+id/comment_message_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:inputType="text"
         android:layout_margin="10dp"
         android:layout_below="@id/comment_recycler_view"
         android:layout_toLeftOf="@id/btn_send"/>
-
-
-
-
-
-
-
 
 </RelativeLayout>

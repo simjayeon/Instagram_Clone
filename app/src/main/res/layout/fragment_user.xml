@@ -26,7 +26,6 @@
             android:textStyle="bold"
             android:textAlignment="center"/>
 
-
         <Button
             android:id="@+id/btn_follow"
             android:layout_width="match_parent"

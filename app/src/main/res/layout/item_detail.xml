@@ -30,6 +30,18 @@
             android:layout_height="wrap_content"
             android:text="User name"/>
 
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/detail_more"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_baseline_more_horiz_24"
+            android:layout_marginRight="8dp"/>
+
     </LinearLayout>
 
     <View
@@ -79,7 +91,7 @@
         android:layout_height="wrap_content"
         android:text="#예쁜날"
         android:padding="5dp"
-        android:layout_marginLeft="5dp"/>
-
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="4dp"/>
 
 </LinearLayout>

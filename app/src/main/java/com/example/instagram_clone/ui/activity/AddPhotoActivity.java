@@ -1,18 +1,18 @@
 package com.example.instagram_clone.ui.activity;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.instagram_clone.R;
@@ -33,7 +33,9 @@ public class AddPhotoActivity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     Uri photoUri;
     ImageView imgView_photo;
-    TextView btn_add_Photo, edit_content;
+    EditText edit_content;
+    Button btn_add_Photo;
+    String message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +43,8 @@ public class AddPhotoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_photo);
 
         imgView_photo = (ImageView) findViewById(R.id.imgView_photo);
-        btn_add_Photo = (TextView) findViewById(R.id.btn_upload);
-        edit_content = (TextView) findViewById(R.id.edit_content);
+        btn_add_Photo = (Button) findViewById(R.id.btn_upload);
+        edit_content = (EditText) findViewById(R.id.edit_content);
 
         //initiate 인스턴스 생성
         firebaseStorage = FirebaseStorage.getInstance();
@@ -54,12 +56,37 @@ public class AddPhotoActivity extends AppCompatActivity {
         photoPickIntent.setType("image/*");
         startActivityForResult(photoPickIntent, PICK_IMAGE_FROM_ALBUM );
 
-        btn_add_Photo.setOnClickListener(new View.OnClickListener() {
+        edit_content.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v) {
-                contentUpload();
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                message = edit_content.getText().toString();
+                if(message.length() == 0){
+                    btn_add_Photo.setEnabled(false);
+                    btn_add_Photo.setBackgroundColor(Color.GRAY);
+                } else {
+                    btn_add_Photo.setEnabled(true);
+                    btn_add_Photo.setBackgroundColor(Color.BLUE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
+
+        btn_add_Photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { contentUpload(); }
+        });
+    }
+
+    public void init(){
+
     }
 
     @Override
@@ -71,7 +98,6 @@ public class AddPhotoActivity extends AppCompatActivity {
                 photoUri = data.getData();
                 Glide.with(AddPhotoActivity.this).load(photoUri).into(imgView_photo);
                 //imgView_photo.setImageURI(photoUri);
-
 
             }else{ //취소버튼을 눌렀을 때 작동하는 부분
             }
@@ -114,11 +140,10 @@ public class AddPhotoActivity extends AppCompatActivity {
 
                    //업로드에는 2가지 방식이 있다
                    //첫번째는 콜백, 두번째는 promise방식
-
                });
             }
-        });
 
+        });
 
     }
 }

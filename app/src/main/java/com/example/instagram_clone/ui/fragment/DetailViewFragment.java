@@ -27,12 +27,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.Transaction;
 
 import java.util.ArrayList;
 
 public class DetailViewFragment extends Fragment {
-
     FirebaseFirestore firestore;
     RecyclerView recyclerView;
     RecyclerViewAdapter recyclerViewAdapter;
@@ -63,7 +61,6 @@ public class DetailViewFragment extends Fragment {
         Context context;
         String uid;
 
-
         public RecyclerViewAdapter(ArrayList<ContentDTO> contentDTOS, Context context) {
             this.contentDTOS = new ArrayList<>();
             this.context = context;
@@ -87,7 +84,6 @@ public class DetailViewFragment extends Fragment {
                 }
             });
         }
-
 
         @NonNull
         @Override
@@ -129,7 +125,6 @@ public class DetailViewFragment extends Fragment {
                     System.out.println(contentDTOS.get(position).userId + "userId랑 uid랑" + contentDTOS.get(position).uid);
                     fragment_user.setArguments(bundle);
 
-
                     if (getActivity() != null) {
                         getActivity()
                                 .getSupportFragmentManager()
@@ -141,7 +136,6 @@ public class DetailViewFragment extends Fragment {
                 }
             });
 
-
             /*댓글 버튼 누르면 실행되는 이벤트*/
             ((CustomViewHolder) holder).btn_comment.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -152,8 +146,6 @@ public class DetailViewFragment extends Fragment {
                     startActivity(intent);
                 }
             });
-
-
         }
 
         @Override
@@ -166,6 +158,7 @@ public class DetailViewFragment extends Fragment {
             ImageView detail_content_img;
             ImageView btn_favorite;
             ImageView btn_comment;
+            ImageView detail_more;
             TextView detail_user_name;
             TextView detail_favorit_count;
             TextView detail_content_txt;
@@ -177,13 +170,11 @@ public class DetailViewFragment extends Fragment {
                 detail_user_name = (TextView) view.findViewById(R.id.detail_profile_name);
                 detail_favorit_count = (TextView) view.findViewById(R.id.detail_favorit_count);
                 detail_content_txt = (TextView) view.findViewById(R.id.detail_content_txt);
+                detail_more = (ImageView) view.findViewById(R.id.detail_more);
                 btn_favorite = (ImageView) view.findViewById(R.id.btn_favorite);
                 btn_comment = (ImageView) view.findViewById(R.id.btn_comment);
             }
         }
-
-
-
 
         //좋아요 누르기 이벤트
         public void favoritEvent(int position) {
@@ -214,8 +205,6 @@ public class DetailViewFragment extends Fragment {
                         .document(contentUidList.get(position)), contentDTO);
             });
         }
-
-
 
         //좋아요 알람
         public void favoriteAlarm(String destinationUid){

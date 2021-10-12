@@ -8,7 +8,6 @@
     android:layout_toRightOf="@+id/mainActivity">
 
     <!-- 상단 툴바  -->
-
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -19,21 +18,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
             <ImageView
                 android:id="@+id/toolbar_logo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/logo_title"/>
+                android:src="@drawable/logo_title"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"/>
 
         </RelativeLayout>
-
-
     </androidx.appcompat.widget.Toolbar>
 
-
     <!-- 인스타 피드 프래임레이아웃 -->
-
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -56,8 +52,6 @@
         </FrameLayout>
     </LinearLayout>
 
-
-
     <!-- 하단 네비게이션 바 -->
     <View
         android:layout_width="match_parent"
@@ -71,7 +65,5 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         app:menu="@menu/bottom_navi_menu"/>
-
-
 
 </RelativeLayout>

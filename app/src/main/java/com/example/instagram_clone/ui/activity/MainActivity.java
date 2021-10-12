@@ -1,5 +1,16 @@
 package com.example.instagram_clone.ui.activity;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,33 +18,16 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.media.Image;
-import android.net.Uri;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-
-import com.bumptech.glide.Glide;
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.ui.fragment.AlarmFragment;
 import com.example.instagram_clone.ui.fragment.DetailViewFragment;
 import com.example.instagram_clone.ui.fragment.GridFragment;
 import com.example.instagram_clone.ui.fragment.UserFragment;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -107,8 +101,6 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigationView.setSelectedItemId(R.id.action_home);
     }
-
-
 
     //데이터베이스에 프로필 이미지 올리기
     @Override

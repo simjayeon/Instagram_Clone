@@ -1,35 +1,27 @@
 package com.example.instagram_clone.ui.fragment;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.media.MediaDrm;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.PagerAdapter;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.model.AlarmDTO;
 import com.example.instagram_clone.model.ContentDTO;
 import com.example.instagram_clone.model.FollowDTO;
 import com.example.instagram_clone.ui.activity.LoginActivity;
-import com.example.instagram_clone.ui.activity.MainActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -39,13 +31,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.Transaction;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Map;
-
-import static android.app.Activity.RESULT_OK;
 
 public class UserFragment extends Fragment {
 
@@ -149,7 +136,9 @@ public class UserFragment extends Fragment {
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                 if(value.getData() != null){
                     String url = value.getData().toString();
-                    Glide.with(getActivity()).load(url).apply(new RequestOptions().circleCrop()).into(account_iv_profile);
+
+                    // 여기 오류나서 일단 주석처리 해놨어요
+                    //Glide.with(getActivity()).load(url).apply(new RequestOptions().circleCrop()).into(account_iv_profile);
                 }
             }
         });
