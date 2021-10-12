@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.model.AlarmDTO;
 import com.google.firebase.auth.FirebaseAuth;
@@ -95,7 +97,8 @@ public class AlarmFragment extends Fragment {
                     .document(alarmDTOArrayList.get(position).uid).get().addOnCompleteListener(task -> {
                 String url = task.getResult().toString();
                 //centerCrop : 비율을 유지하며 가운데를 중심으로 자른다 (이미지 스케일을 조절)
-                Glide.with(getActivity()).load(url).centerCrop().crossFade().into(((CustomViewHolder)holder).commentviewitem_imageview_profile);
+                Glide.with(getActivity()).load(url).apply(new RequestOptions().circleCrop())
+                        .into(((CustomViewHolder)holder).commentviewitem_imageview_profile);
             });
             System.out.println(alarmDTOArrayList.get(position).kind + "이야");
             switch (alarmDTOArrayList.get(position).kind){
