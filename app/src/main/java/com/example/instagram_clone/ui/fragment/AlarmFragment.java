@@ -91,14 +91,17 @@ public class AlarmFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+            View view = holder.itemView;
             ImageView profileImage = ((CustomViewHolder) holder).commentviewitem_imageview_profile;
-            System.out.println("오느냐..7");
+
             FirebaseFirestore.getInstance().collection("profileImages")
                     .document(alarmDTOArrayList.get(position).uid).get().addOnCompleteListener(task -> {
                 String url = task.getResult().toString();
-                Glide.with(getActivity()).load(url).centerCrop().into(profileImage);
+                Glide.with(view.getContext()).load(url).centerCrop().into(profileImage);
             });
+
             System.out.println("오느냐..8");
+
             switch (alarmDTOArrayList.get(position).kind){
                 case 0:
                     String str_0 = alarmDTOArrayList.get(position).userId + getString(R.string.alarm_favorite);
@@ -112,14 +115,12 @@ public class AlarmFragment extends Fragment {
             }
         }
 
-
         class CustomViewHolder extends RecyclerView.ViewHolder {
             ImageView commentviewitem_imageview_profile;
             TextView commentviewitem_textview_profile;
             TextView commentviewitem_textview_comment;
             public CustomViewHolder(@NonNull View itemView) {
                 super(itemView);
-                System.out.println("오느냐..9");
                 commentviewitem_imageview_profile = itemView.findViewById(R.id.commentviewitem_imageview_profile);
                 commentviewitem_textview_profile = itemView.findViewById(R.id.commentviewitem_textview_profile);
                 commentviewitem_textview_comment = itemView.findViewById(R.id.commentviewitem_textview_comment);
