@@ -42,9 +42,9 @@ public class UserFragment extends Fragment {
     UserFragmentAdapter userFragmentAdapter;
     RecyclerView recyclerView;
     String uid, currentUserId, selectUserid;
-    ImageView btn_back, toolbar_logo, account_iv_profile;
+    ImageView account_iv_profile;
     Button btn_follow;
-    TextView toolbar_user_id, account_tv_following_count,
+    TextView account_tv_following_count,
             account_tv_follower_count, account_post_count,
             user_page_id;
     BottomNavigationView bottomNavigationView;
@@ -62,18 +62,17 @@ public class UserFragment extends Fragment {
         firestore = FirebaseFirestore.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
 
-        recyclerView = view.findViewById(R.id.account_recyclerView);
         userFragmentAdapter = new UserFragmentAdapter(uid);
+
+
+        recyclerView = view.findViewById(R.id.account_recyclerView);
         btn_follow = view.findViewById(R.id.btn_follow);
         account_iv_profile = view.findViewById(R.id.account_iv_profile);
         bottomNavigationView = view.findViewById(R.id.bottom_NaviBar);
-        toolbar_logo = view.findViewById(R.id.toolbar_logo);
         account_tv_following_count = view.findViewById(R.id.account_tv_following_count);
         account_tv_follower_count = view.findViewById(R.id.account_tv_follower_count);
         account_post_count = view.findViewById(R.id.account_tv_post_count);
         user_page_id = view.findViewById(R.id.user_page_id);
-
-
 
         Bundle bundle = this.getArguments();
         if(bundle != null){
@@ -137,8 +136,10 @@ public class UserFragment extends Fragment {
                 if(value.getData() != null){
                     String url = value.getData().toString();
 
-                    // 여기 오류나서 일단 주석처리 해놨어요
+                    // 여기 오류
                     //Glide.with(getActivity()).load(url).apply(new RequestOptions().circleCrop()).into(account_iv_profile);
+                }else{
+
                 }
             }
         });
@@ -171,8 +172,8 @@ public class UserFragment extends Fragment {
  */
 
     //상대방 계정에는 또다른 팔로워
-    // 내 계정에는 상대방 누구를 팔로워 하는지
-    // 과정ㅇ의 트랜잭션
+    //내 계정에는 상대방 누구를 팔로워 하는지
+    //과정의 트랜잭션
     //먼저 팔로워 리스트에 값이 들어가야할 것 같음 -> 내가 누구를 팔로워/팔로잉 했는지
     public void requestFollow(String uid, String currentUserId){
         // ㅐㄴ 팔로워
@@ -267,12 +268,12 @@ public class UserFragment extends Fragment {
                         //쿼리값이 없을 때 바로 종료시키는 것 (오류 방지)
                     }
 
-                    //e데이터를 받아주는 부분
+                    //데이터를 받아주는 부분
                     for(QueryDocumentSnapshot doc : value){
                         contentDTOS.add(doc.toObject(ContentDTO.class));
                     }
                     account_post_count.setText(String.valueOf(contentDTOS.size()));
-                    notifyDataSetChanged(); //새로고치ㅣㅁ되도록
+                    notifyDataSetChanged(); //새로고침
                 }
             });
         }

@@ -19,16 +19,19 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth; // FirebaseAuth 객체의 공유 인스턴스
     private GoogleSignInClient googleSignInClient; // 구글
     private GoogleSignInOptions gso;
-    TextView btn_login, btn_signUp, btn_login_google;
+    //private CallbackManager callbackManager;
+    TextView btn_login, btn_signUp, btn_login_google, btn_login_facebook;
     EditText edit_email, edit_password;
 
 
@@ -42,10 +45,9 @@ public class LoginActivity extends AppCompatActivity {
         btn_login = (TextView) findViewById(R.id.btn_login);
         btn_signUp = (TextView) findViewById(R.id.btn_signup_start);
         btn_login_google = (TextView) findViewById(R.id.btn_google);
-
+        btn_login_facebook = (TextView) findViewById(R.id.btn_facebook);
 
         firebaseAuth = FirebaseAuth.getInstance();
-
 
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -54,32 +56,31 @@ public class LoginActivity extends AppCompatActivity {
 
         googleSignInClient = GoogleSignIn.getClient(LoginActivity.this, gso);
 
-
-
-        btn_signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //로그인 및 회원가입 버튼을 클릭했을 때 아래 실행
-                signUp();
-            }
-        });
-
-        btn_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signIn();
-            }
-        });
-
-        btn_login_google.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                googleLogin();
-            }
-        });
-
-
+        btn_login.setOnClickListener(this::onClick);
+        btn_signUp.setOnClickListener(this::onClick);
+        btn_login_google.setOnClickListener(this::onClick);
+        btn_login_facebook.setOnClickListener(this::onClick);
     }
+
+    //로그인, 회원가입 onClick 이벤트
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.btn_login:
+                signIn();
+                break;
+            case R.id.btn_google:
+                googleLogin();
+                break;
+            case R.id.btn_facebook:
+                facebookLogin();
+                break;
+            case R.id.btn_signup_start:
+                signUp();
+                break;
+
+        }
+    }
+
 
     //자동로그인
     @Override
@@ -88,14 +89,13 @@ public class LoginActivity extends AppCompatActivity {
         moveMainPage(firebaseAuth.getCurrentUser());
     }
 
-
+    //회원가입 페이지로 이동
     private void signUp() {
         Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
         startActivity(intent);
     }
 
-
-
+    //로그인
     public void signIn(){
         firebaseAuth.signInWithEmailAndPassword(edit_email.getText().toString(), edit_password.getText().toString())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
                             //로그인 성공 시
-                            moveMainPage(task.getResult().getUser()); // 뭔지 알아내기
+                            moveMainPage(task.getResult().getUser());
                         }else{
                             //회원가입 실패시
                             Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
@@ -114,21 +114,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-
     public void googleLogin(){
         Intent intent = googleSignInClient.getSignInIntent(); //구글 클라이언트에서 로그인화면으로 이동
         startActivityForResult(intent, 1);
     }
-
-
-
-    public void moveMainPage(FirebaseUser user){
-        if (user != null){ //파이어베이스 유저상태가 있을 경우 아래 실행
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        }
-    }
-
 
     //구글 로그인 요청
     @Override
@@ -150,9 +139,41 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    //파이어베이스로 값 저장 (뺄까 고민중)
-    private void firebaseAuthWithGoogle(String idToken) {
 
+    private void facebookLogin() {
+        //callbackManager = CallbackManager.Factory.create();
+    }
+
+
+
+
+    //구글 로그인 정보 파이어베이스에 저장
+    private void firebaseAuthWithGoogle(String idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (!task.isSuccessful()) {
+                            System.out.println("성공");
+                            //FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                            moveMainPage(task.getResult().getUser());
+
+                        }else {
+                            System.out.println("저장안됨");
+                        }
+                    }
+                });
+    }
+
+
+
+    //메인 페이지로 이동 메소드
+    public void moveMainPage(FirebaseUser user){
+        if (user != null){ //파이어베이스 유저상태가 있을 경우 아래 실행
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        }
     }
 
 }

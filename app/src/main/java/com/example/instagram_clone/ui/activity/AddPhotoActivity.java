@@ -51,23 +51,33 @@ public class AddPhotoActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
 
-        //ㅐㅇㄹ범 열기
+        //외부 저장소의 "image/*" 열기
         Intent photoPickIntent = new Intent(Intent.ACTION_PICK);
         photoPickIntent.setType("image/*");
+        //선택한 사진의 값을 받아오기 위해 startActivityForResult()를 사용함
         startActivityForResult(photoPickIntent, PICK_IMAGE_FROM_ALBUM );
 
+        //EditText : 텍스트를 입력하고 수정하기 위한 UI
+        //TextInputLayout : editText 또는 TextInputEditText를 좀 더 유연하게 보여주기 위한 layout
+        //addTextChangedListener : 입력 시점에 따라 이벤트를 설정
+        //TextWatcher()를 통해 EditText에 추가하여 텍스트를 변경할 때 호출됨
         edit_content.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //입력하기 전에 변화
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //EditTex에 변경이 생겼을 때 나타나는 메소드
+                //메시지를 입력 받으면 업로드 버튼의 enabled와 색상이 변경됨
                 message = edit_content.getText().toString();
                 if(message.length() == 0){
+                    //입력받은 message가 0일 경우 버튼을 사용할 수 없음
                     btn_add_Photo.setEnabled(false);
                     btn_add_Photo.setBackgroundColor(Color.GRAY);
                 } else {
+                    //입력받은 message가 0이 아닐 경우 버튼을 사용할 수 있음
                     btn_add_Photo.setEnabled(true);
                     btn_add_Photo.setBackgroundColor(Color.BLUE);
                 }
@@ -75,18 +85,15 @@ public class AddPhotoActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                //입력이 끝난 후의 변화
             }
         });
 
+        //업로드 버튼 눌렀을 때 이벤트 -> contentUpload() 호출
         btn_add_Photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) { contentUpload(); }
         });
-    }
-
-    public void init(){
-
     }
 
     @Override
@@ -104,15 +111,21 @@ public class AddPhotoActivity extends AppCompatActivity {
         }
     }
 
+    //게시물 업로드 메소드
     public void contentUpload(){
-        //make file name
+        //파일 이름 생성
+        //SimpleDateFormat을 이용하여 yyyy(년)mm(월)dd(일)_HH(시)mm(분)ss(초)로 timeStamp에 기록함
+        //timeStamp는 시스템의 현재 시간을 측정하여 날짜 형식으로 변환함
         SimpleDateFormat timeStamp = new SimpleDateFormat("yyyymmdd_HHmmss");
         timeStamp.format(System.currentTimeMillis());
+        //timeStamp 앞에 IMAGE_, 뒤에 .png를 붙여 이미지 파일명을 생성함
         String imageFileName = "IMAGE_" + timeStamp.toString() + "+.png";
 
+        //구글 스토리지에서 images에 있는 이미지 파일을 참조함
         StorageReference storageRef = firebaseStorage.getReference().child("images").child(imageFileName);
 
         //업로드(Callback method)
+        //참조한 스토리지에서 photoUri
         storageRef.putFile(photoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -136,10 +149,7 @@ public class AddPhotoActivity extends AppCompatActivity {
 
                    firestore.collection("images").document().set(contentDTO);
                    setResult(RESULT_OK); // 정상적으로 닫혔다는 플래그를 넘겨주기 위해서 Result_ok 값 넘겨줌
-                   finish(); //창이 닫힘
-
-                   //업로드에는 2가지 방식이 있다
-                   //첫번째는 콜백, 두번째는 promise방식
+                   finish();
                });
             }
 

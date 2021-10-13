@@ -26,7 +26,11 @@ import com.example.instagram_clone.ui.fragment.UserFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -37,24 +41,20 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    Context mContext = MainActivity.this;
-    private static final int ACTIVITY_NUM = 0;
-
     BottomNavigationView bottomNavigationView;
     Fragment fragment_detail;
     Fragment fragment_user;
     Fragment fragment_alarm;
     Fragment fragment_grid;
 
-    ImageView btn_back, toolbar_logo;
     Button btn_follow;
-    TextView toolbar_user_id;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //READ_EXTERNAL_STORAGE : 애플리케이션이 외부 저장소에서 읽을 수 있도록 설정
+        //외부 저장소를 읽을 수 있도록 매니페스트에 권한 요청
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
         fragment_alarm = new AlarmFragment();
@@ -63,8 +63,8 @@ public class MainActivity extends AppCompatActivity {
         fragment_grid = new GridFragment();
 
         btn_follow = findViewById(R.id.btn_follow);
-        toolbar_logo = findViewById(R.id.toolbar_logo);
 
+        //하단바 네비게이션 선택 이벤트 -> 아이템 클릭할 때 프래그먼트 교체 작업
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_NaviBar);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -77,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_grid).commit();
                         return true;
                     case R.id.action_add_photo:
+
+                        //권한 요청이 허용이 되었는지 selfCheck 후 권한이 grandted일 경우 AddPhotoActivity로 전환
                         if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == getPackageManager().PERMISSION_GRANTED){
                             startActivity(new Intent(MainActivity.this, AddPhotoActivity.class));
                         }
@@ -92,8 +94,6 @@ public class MainActivity extends AppCompatActivity {
                         fragment_user.setArguments(bundle);
                         getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_user).commit();
                         return true;
-
-
                 }
                 return false;
             }
@@ -102,14 +102,15 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.action_home);
     }
 
-    //데이터베이스에 프로필 이미지 올리기
+    //데이터베이스에 프로필 이미지 올리기 (storage에서 꺼내오는 법으로 변경이 필요함 -> 파이어스토어에 잘못 저장되고 있음)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == requestCode && resultCode == Activity.RESULT_OK){
+        if(requestCode == 1 && resultCode == Activity.RESULT_OK){
             Uri imageUri = data.getData();
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            //String profileFileName = "IMAGE_" + uid + ".png";
             StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("userProfileImages").child(uid);
             storageRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -118,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
                     String url = storageRef.getDownloadUrl().toString();
                     Map<String, Object> map = new HashMap<String, Object>();
                     map.put(uid, url);
-                    System.out.println(url+"머라구나오늬");
                     FirebaseFirestore.getInstance().collection("profileImages").document(uid).set(map);
                 }
             });
