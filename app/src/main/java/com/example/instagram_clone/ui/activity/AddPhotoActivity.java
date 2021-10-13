@@ -51,11 +51,14 @@ public class AddPhotoActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
 
-        //외부 저장소의 "image/*" 열기
-        Intent photoPickIntent = new Intent(Intent.ACTION_PICK);
-        photoPickIntent.setType("image/*");
-        //선택한 사진의 값을 받아오기 위해 startActivityForResult()를 사용함
-        startActivityForResult(photoPickIntent, PICK_IMAGE_FROM_ALBUM );
+        imgView_photo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pickAlbum();
+            }
+        });
+
+        pickAlbum();
 
         //EditText : 텍스트를 입력하고 수정하기 위한 UI
         //TextInputLayout : editText 또는 TextInputEditText를 좀 더 유연하게 보여주기 위한 layout
@@ -154,6 +157,13 @@ public class AddPhotoActivity extends AppCompatActivity {
             }
 
         });
+    }
 
+    public void pickAlbum(){
+        //외부 저장소의 "image/*" 열기
+        Intent photoPickIntent = new Intent(Intent.ACTION_PICK);
+        photoPickIntent.setType("image/*");
+        //선택한 사진의 값을 받아오기 위해 startActivityForResult()를 사용함
+        startActivityForResult(photoPickIntent, PICK_IMAGE_FROM_ALBUM );
     }
 }
