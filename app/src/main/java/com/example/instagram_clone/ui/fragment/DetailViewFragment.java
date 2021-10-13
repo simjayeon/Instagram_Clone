@@ -36,15 +36,19 @@ public class DetailViewFragment extends Fragment {
     RecyclerView recyclerView;
     RecyclerViewAdapter recyclerViewAdapter;
     ArrayList<ContentDTO> contentDTOS = new ArrayList<>();
+
+    //프래그먼트 간의 데이터 전송을 위해
     Fragment fragment_user = new UserFragment();
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_detail, container, false);
-        FirebaseApp.initializeApp(getActivity());
+        FirebaseApp.initializeApp(getActivity()); //???
 
-        firestore = FirebaseFirestore.getInstance(); //인스턴스 초기화
+        firestore = FirebaseFirestore.getInstance(); //파이어스토어 인스턴스 초기화
+
+        //RecyclerView 어댑터 설정 및 레이아웃 계획
         recyclerView = view.findViewById(R.id.detail_recyclerView);
         recyclerViewAdapter = new RecyclerViewAdapter(contentDTOS, getActivity());
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -54,32 +58,39 @@ public class DetailViewFragment extends Fragment {
         return view;
     }
 
+    //게시물을 띄울 RecyclerView의 Adapter
     public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        //content의 model
         ArrayList<ContentDTO> contentDTOS;
+        //content를 작성한 uid를 저장할 리스트
+        //ArrayList이기 때문에 순서, 중복 상관없음
         ArrayList<String> contentUidList = new ArrayList<>();
         Context context;
-        String uid;
 
+        //adapter 초기 실행문
         public RecyclerViewAdapter(ArrayList<ContentDTO> contentDTOS, Context context) {
             this.contentDTOS = new ArrayList<>();
             this.context = context;
 
-            //Query.Direction.DESCDING을 통해 내림차순으로 변경(최신 게시물이 위로 오도록)
+            //Query.Direction.DESCDING을 통해 내림차순으로 데이터를 value에 저장
             firestore.collection("images").orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                    //리스트를 비움
                     RecyclerViewAdapter.this.contentDTOS.clear();
                     contentUidList.clear();
                     if (value == null) {
                         //쿼리값이 없을 때 바로 종료시키는 것 (오류 방지)
                     }
 
+                    //doc부터 value까지 반복
+                    //doc의 object를 contentDTOS에 추가
                     for (QueryDocumentSnapshot doc : value) {
                         RecyclerViewAdapter.this.contentDTOS.add(doc.toObject(ContentDTO.class));
                         contentUidList.add(doc.getId());
                     }
+
                     //Adapter에게 RecyclerView의 리스트 데이터가 바뀌었으니 모든 항목을 업데이트하라는 신호가 전달됨
                     notifyDataSetChanged(); //새로고침
                 }
@@ -95,14 +106,21 @@ public class DetailViewFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            ((CustomViewHolder) holder).detail_user_name.setText(contentDTOS.get(position).userId); //userName
-            //메인 프로필사진
-            ///Glide.with(holder.itemView.getContext()).load(contentDTOS.get(position).imageUrl).into(((CustomViewHolder) holder).detail_profile_img); //프로필이미지
-            Glide.with(holder.itemView.getContext()).load(contentDTOS.get(position).imageUrl).into(((CustomViewHolder) holder).detail_content_img); //콘텐츠이미지
-            ((CustomViewHolder) holder).detail_favorit_count.setText(contentDTOS.get(position).favoriteCount + "명이 좋아합니다"); //userName
-            ((CustomViewHolder) holder).detail_content_txt.setText(contentDTOS.get(position).explain); //userName
+            //((CustomViewHolder)holder)한 이유는 holder가 본인이 CustomViewHolder인지 모르기 때문에 캐스팅해줌
+            //텍스트뷰에 게시글 작성자 email 담기
+            ((CustomViewHolder) holder).detail_user_name.setText(contentDTOS.get(position).userId);
 
-            //좋아요 버튼 클릭
+            //이미지뷰에 프로필 사진 담기
+            ///Glide.with(holder.itemView.getContext()).load(contentDTOS.get(position).imageUrl).into(((CustomViewHolder) holder).detail_profile_img); //프로필이미지
+
+            //이미지뷰에 게시글 이미지 담기
+            Glide.with(holder.itemView.getContext()).load(contentDTOS.get(position).imageUrl).into(((CustomViewHolder) holder).detail_content_img);
+            //텍스트뷰에 좋아요 개수 담기
+            ((CustomViewHolder) holder).detail_favorit_count.setText(contentDTOS.get(position).favoriteCount + "명이 좋아합니다");
+            //텍스트뷰에 게시글 내용 담기
+            ((CustomViewHolder) holder).detail_content_txt.setText(contentDTOS.get(position).explain);
+
+            //좋아요 버튼 클릭 이벤트
             ((CustomViewHolder) holder).btn_favorite.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -111,24 +129,30 @@ public class DetailViewFragment extends Fragment {
             });
 
             //좋아요 하트 채워지기 이벤트
+            //conentDTOS의 favorites 리스트에 저장된 containKey가 false 나오면 채워진 하트 이미지로 변경 (리스트에 uid가 없기 때문에 좋아요를 안 누른 것으로 판단)
             if (contentDTOS.get(position).favorities.containsKey(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                 ((CustomViewHolder) holder).btn_favorite.setImageResource(R.drawable.ic_favorite);
             } else {
+                //conentDTOS의 favorites 리스트에 저장된 containKey가 true가 나오면 빈 하트 이미지로 변경 (리스트에 uid가 있기 때문에 좋아요를 누른 것으로 판단)
                 ((CustomViewHolder) holder).btn_favorite.setImageResource(R.drawable.ic_favorite_border);
             }
 
+            //메인 피드에서 프로필 사진 클릭했을 때 이벤트
             ((CustomViewHolder) holder).detail_profile_img.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //프래그먼트 간의 데이터 이동을 위해 Bundle객체 선언 및 초기화
                     Bundle bundle = new Bundle();
+                    //bundle에 각각의 키와 데이터를 저장함
                     bundle.putString("destinationUid", contentDTOS.get(position).uid);
                     bundle.putString("userId", contentDTOS.get(position).userId);
-                    System.out.println(contentDTOS.get(position).userId + "userId랑 uid랑" + contentDTOS.get(position).uid);
+                    //데이터를 전송할 프래그먼트에 bundle을 setArguments함
                     fragment_user.setArguments(bundle);
 
+                    //getActivity()가 null이 아닐 때 UserFragment로 전환
                     if (getActivity() != null) {
                         getActivity()
-                                .getSupportFragmentManager()
+                                .getSupportFragmentManager() //프래그먼트의 추가, 삭제, 교체를 관리
                                 .beginTransaction()
                                 .replace(R.id.main_content, fragment_user)
                                 .addToBackStack(null)
@@ -137,23 +161,29 @@ public class DetailViewFragment extends Fragment {
                 }
             });
 
-            /*댓글 버튼 누르면 실행되는 이벤트*/
+            //댓글 아이콘 누르면 실행되는 이벤트
             ((CustomViewHolder) holder).btn_comment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //CommentActivity로 intent함
                     Intent intent = new Intent(getView().getContext(), CommentActivity.class);
+                    //intent할 때 contentUidList와 contentDTOS의 uid값과 함께 이동함
+                    //아이콘을 선택한 사용자의 uid와 댓글이 달리는 게시물의 작성자의 uid를 확인하기 위해서 함께 이동함
                     intent.putExtra("contentUid", contentUidList.get(position));
                     intent.putExtra("destinationUid", contentDTOS.get(position).uid);
-                    startActivity(intent);
+                    startActivity(intent); //이동
                 }
             });
         }
 
+        //contentDTOS의 size
         @Override
         public int getItemCount() {
             return contentDTOS.size();
         }
-        //뷰홀더
+
+        //뷰홀더 : 각 View를 보관하는 객체로, 각 구성 요소를 저장하여 반복적으로 조회하지 않고도 즉시 액세스할 수 있도록 하는 역할
+        //메모리낭비가 적으며, 액세스 속도가 향상함
         private class CustomViewHolder extends RecyclerView.ViewHolder {
             ImageView detail_profile_img;
             ImageView detail_content_img;
@@ -179,10 +209,9 @@ public class DetailViewFragment extends Fragment {
 
         //좋아요 누르기 이벤트
         public void favoritEvent(int position) {
-            firestore = FirebaseFirestore.getInstance();
 
             firestore.runTransaction(transaction -> {
-                uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 ContentDTO contentDTO = transaction.get(firestore.collection("images")
                         .document(contentUidList.get(position))).toObject(ContentDTO.class);
 

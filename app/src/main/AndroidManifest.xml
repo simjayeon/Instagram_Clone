@@ -31,7 +31,6 @@
         <meta-data
             android:name="com.google.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
-
     </application>
 
 </manifest>
