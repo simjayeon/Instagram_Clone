@@ -1,5 +1,6 @@
 package com.example.instagram_clone.ui.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -27,7 +28,7 @@ import com.google.firebase.storage.UploadTask;
 import java.text.SimpleDateFormat;
 
 public class AddPhotoActivity extends AppCompatActivity {
-    int PICK_IMAGE_FROM_ALBUM = 0; //requestCode
+    final int PICK_IMAGE_FROM_ALBUM = 0; //requestCode
     private FirebaseStorage firebaseStorage;
     FirebaseFirestore firestore;
     FirebaseAuth firebaseAuth;
@@ -119,7 +120,7 @@ public class AddPhotoActivity extends AppCompatActivity {
         //파일 이름 생성
         //SimpleDateFormat을 이용하여 yyyy(년)mm(월)dd(일)_HH(시)mm(분)ss(초)로 timeStamp에 기록함
         //timeStamp는 시스템의 현재 시간을 측정하여 날짜 형식으로 변환함
-        SimpleDateFormat timeStamp = new SimpleDateFormat("yyyymmdd_HHmmss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss");
         timeStamp.format(System.currentTimeMillis());
         //timeStamp 앞에 IMAGE_, 뒤에 .png를 붙여 이미지 파일명을 생성함
         String imageFileName = "IMAGE_" + timeStamp.toString() + "+.png";
