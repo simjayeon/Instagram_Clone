@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -65,8 +66,8 @@ public class DetailViewFragment extends Fragment {
             this.contentDTOS = new ArrayList<>();
             this.context = context;
 
-
-            firestore.collection("images").orderBy("timestamp").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            //Query.Direction.DESCDING을 통해 내림차순으로 변경(최신 게시물이 위로 오도록)
+            firestore.collection("images").orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                     RecyclerViewAdapter.this.contentDTOS.clear();
