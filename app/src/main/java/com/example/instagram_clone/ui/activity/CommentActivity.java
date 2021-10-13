@@ -54,11 +54,11 @@ public class CommentActivity extends AppCompatActivity {
 
         comment_message.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void beforeTextChanged(CharSequence charSequence, int start, int before, int count) {
             }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 message = comment_message.getText().toString();
                 if(message.length() == 0){
                     btn_send.setEnabled(false);
@@ -136,26 +136,14 @@ public class CommentActivity extends AppCompatActivity {
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_comment, parent, false);
-            return new CustomerViewHolder(view);
+            return new CustomViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            ((CustomerViewHolder) holder).comment_comment_txt.setText(commentList.get(position).comment);
-            ((CustomerViewHolder) holder).comment_profile_id.setText(commentList.get(position).userId);
-
-            RecyclerView.ViewHolder finalHolder = holder;
-            FirebaseFirestore.getInstance().collection("profileImages")
-                    .document(commentList.get(position).uid).get()
-                    .addOnCompleteListener(task -> {
-                        if(task.isSuccessful()){
-                            String url = task.getResult().toString();
-                            System.out.println(url+"테스크");
-                            Glide.with(finalHolder.itemView.getContext()).load(url).into(((CustomerViewHolder) finalHolder).comment_profile_img);
-                        }else{
-                            System.out.println("노성공");
-                        }
-                    });
+            ((CustomViewHolder) holder).comment_profile_img.setImageResource(R.drawable.user);
+            ((CustomViewHolder) holder).comment_comment_txt.setText(commentList.get(position).comment);
+            ((CustomViewHolder) holder).comment_profile_id.setText(commentList.get(position).userId);
 
         }
 
@@ -164,12 +152,12 @@ public class CommentActivity extends AppCompatActivity {
             return commentList.size();
         }
 
-        private class CustomerViewHolder extends RecyclerView.ViewHolder {
+        private class CustomViewHolder extends RecyclerView.ViewHolder {
             ImageView comment_profile_img;
             TextView comment_profile_id;
             TextView comment_comment_txt;
 
-            public CustomerViewHolder(View view) {
+            public CustomViewHolder(View view) {
                 super(view);
                 comment_profile_img = view.findViewById(R.id.commentItem_profileImg);
                 comment_profile_id = view.findViewById(R.id.commentItem_userId);

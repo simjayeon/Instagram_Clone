@@ -61,23 +61,20 @@ public class AddPhotoActivity extends AppCompatActivity {
 
         pickAlbum();
 
-        //EditText : 텍스트를 입력하고 수정하기 위한 UI
+
         //TextInputLayout : editText 또는 TextInputEditText를 좀 더 유연하게 보여주기 위한 layout
         //addTextChangedListener : 입력 시점에 따라 이벤트를 설정
         //TextWatcher()를 통해 EditText에 추가하여 텍스트를 변경할 때 호출됨
         edit_content.addTextChangedListener(new TextWatcher() {
+            @Override  //입력하기 전에 변화
+            public void beforeTextChanged(CharSequence charSequence, int start, int before, int count) { }
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                //입력하기 전에 변화
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 //EditTex에 변경이 생겼을 때 나타나는 메소드
-                //메시지를 입력 받으면 업로드 버튼의 enabled와 색상이 변경됨
                 message = edit_content.getText().toString();
                 if(message.length() == 0){
                     //입력받은 message가 0일 경우 버튼을 사용할 수 없음
+                    //메시지를 입력 받으면 업로드 버튼의 enabled와 색상이 변경됨
                     btn_add_Photo.setEnabled(false);
                     btn_add_Photo.setBackgroundColor(Color.GRAY);
                 } else {
@@ -86,11 +83,8 @@ public class AddPhotoActivity extends AppCompatActivity {
                     btn_add_Photo.setBackgroundColor(Color.BLUE);
                 }
             }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                //입력이 끝난 후의 변화
-            }
+            @Override //입력이 끝난 후의 변화
+            public void afterTextChanged(Editable editable) { }
         });
 
         //업로드 버튼 눌렀을 때 이벤트 -> contentUpload() 호출
@@ -111,14 +105,14 @@ public class AddPhotoActivity extends AppCompatActivity {
                 //imgView_photo.setImageURI(photoUri);
 
             }else{ //취소버튼을 눌렀을 때 작동하는 부분
+                finish();
             }
         }
     }
 
     //게시물 업로드 메소드
     public void contentUpload(){
-        //파일 이름 생성
-        //SimpleDateFormat을 이용하여 yyyy(년)mm(월)dd(일)_HH(시)mm(분)ss(초)로 timeStamp에 기록함
+        //SimpleDateFormat을 이용하여 yyyy(년)MM(월)dd(일)HH(시)mm(분)ss(초)로 timeStamp에 기록함
         //timeStamp는 시스템의 현재 시간을 측정하여 날짜 형식으로 변환함
         @SuppressLint("SimpleDateFormat") SimpleDateFormat timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss");
         timeStamp.format(System.currentTimeMillis());
@@ -133,30 +127,27 @@ public class AddPhotoActivity extends AppCompatActivity {
         storageRef.putFile(photoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-               storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                  ContentDTO contentDTO = new ContentDTO();
+               storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                   @Override
+                   public void onSuccess(Uri uri) {
+                       ContentDTO contentDTO = new ContentDTO();
+                       //insert downloadUrl of image
+                       contentDTO.imageUrl = uri.toString();
+                       //Insert uid of user
+                       contentDTO.uid = firebaseAuth.getCurrentUser().getUid(); //현재 접속된 사용자
+                       //insert userId
+                       contentDTO.userId = firebaseAuth.getCurrentUser().getEmail();
+                       //explanin of content
+                       contentDTO.explain = edit_content.getText().toString();
+                       //insertTimeStamp
+                       contentDTO.timestamp = System.currentTimeMillis();
 
-                  //insert downloadUrl of image
-                  contentDTO.imageUrl = uri.toString();
-
-                  //Insert uid of user
-                   contentDTO.uid = firebaseAuth.getCurrentUser().getUid(); //현재 접속된 사용자
-
-                   //insert userId
-                   contentDTO.userId = firebaseAuth.getCurrentUser().getEmail();
-
-                   //explanin of content
-                   contentDTO.explain = edit_content.getText().toString();
-
-                   //insertTimeStamp
-                   contentDTO.timestamp = System.currentTimeMillis();
-
-                   firestore.collection("images").document().set(contentDTO);
-                   setResult(RESULT_OK); // 정상적으로 닫혔다는 플래그를 넘겨주기 위해서 Result_ok 값 넘겨줌
-                   finish();
+                       firestore.collection("images").document().set(contentDTO);
+                       setResult(RESULT_OK); // 정상적으로 닫혔다는 플래그를 넘겨주기 위해서 Result_ok 값 넘겨줌
+                       finish();
+                   }
                });
             }
-
         });
     }
 

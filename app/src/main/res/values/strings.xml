@@ -1,7 +1,8 @@
 <resources>
-    <string name="app_name">Simbastagram</string>
-    <string name="facebook_app_id">873009302900995</string>
-    <string name="fb_login_protocol_scheme">fb873009302900995</string>
+    <string name="app_name">Simba</string>
+    <string name="facebook_app_id">1054254482069831</string>
+    <string name="fb_login_protocol_scheme">fb1054254482069831</string>
+
 
     <!-- Sign In -->
     <string name="email">Email</string>

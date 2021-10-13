@@ -86,6 +86,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+
     //로그인, 회원가입 onClick 이벤트
     public void onClick(View view) {
         switch (view.getId()){
@@ -105,8 +106,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-
-    //자동로그인
+    //자동 로그인
     @Override
     protected void onStart() {
         super.onStart();
@@ -128,6 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                         if(task.isSuccessful()){
                             //로그인 성공 시
                             moveMainPage(task.getResult().getUser());
+                            System.out.println(task.getResult().getUser()+"어떤가");
                         }else{
                             //회원가입 실패시
                             Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
@@ -147,7 +148,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1){
+        if(requestCode == 1 && resultCode == RESULT_OK){
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             if(task.isSuccessful()){
                 //로그인 성공일 경우
@@ -159,18 +160,36 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }else{
                 //로그인 실패일 경우
+                Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+
+
+    //구글 로그인 정보 파이어베이스에 저장
+    private void firebaseAuthWithGoogle(String idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            moveMainPage(task.getResult().getUser());
+                            finish();
+                        }else {
+                            System.out.println("계정 인증 실패");
+                        }
+                    }
+                });
     }
 
 
     private void facebookLogin() {
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-
             @Override
             public void onSuccess(LoginResult loginResult) {
-
                 handleFacebookAccessToken(loginResult.getAccessToken());
             }
 
@@ -189,38 +208,17 @@ public class LoginActivity extends AppCompatActivity {
 
     private void handleFacebookAccessToken(AccessToken accessToken) {
         AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
-
         firebaseAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-
-                        if (!task.isSuccessful()) {
+                        if (task.isSuccessful()) {
                             moveMainPage(task.getResult().getUser());
                         }
                     }
                 });
     }
 
-
-    //구글 로그인 정보 파이어베이스에 저장
-    private void firebaseAuthWithGoogle(String idToken) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (!task.isSuccessful()) {
-                            System.out.println("성공");
-                            //FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-                            moveMainPage(task.getResult().getUser());
-
-                        }else {
-                            System.out.println("저장안됨");
-                        }
-                    }
-                });
-    }
 
 
 

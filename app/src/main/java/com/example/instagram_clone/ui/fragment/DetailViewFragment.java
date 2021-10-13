@@ -28,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 
 import java.util.ArrayList;
 
@@ -50,7 +51,7 @@ public class DetailViewFragment extends Fragment {
 
         //RecyclerView 어댑터 설정 및 레이아웃 계획
         recyclerView = view.findViewById(R.id.detail_recyclerView);
-        recyclerViewAdapter = new RecyclerViewAdapter(contentDTOS, getActivity());
+        recyclerViewAdapter = new RecyclerViewAdapter(contentDTOS);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(recyclerViewAdapter);
@@ -66,15 +67,14 @@ public class DetailViewFragment extends Fragment {
         //content를 작성한 uid를 저장할 리스트
         //ArrayList이기 때문에 순서, 중복 상관없음
         ArrayList<String> contentUidList = new ArrayList<>();
-        Context context;
 
         //adapter 초기 실행문
-        public RecyclerViewAdapter(ArrayList<ContentDTO> contentDTOS, Context context) {
+        public RecyclerViewAdapter(ArrayList<ContentDTO> contentDTOS) {
             this.contentDTOS = new ArrayList<>();
-            this.context = context;
 
             //Query.Direction.DESCDING을 통해 내림차순으로 데이터를 value에 저장
-            firestore.collection("images").orderBy("timestamp", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            firestore.collection("images").orderBy("timestamp", Query.Direction.DESCENDING)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                     //리스트를 비움
@@ -84,7 +84,6 @@ public class DetailViewFragment extends Fragment {
                         //쿼리값이 없을 때 바로 종료시키는 것 (오류 방지)
                     }
 
-                    //doc부터 value까지 반복
                     //doc의 object를 contentDTOS에 추가
                     for (QueryDocumentSnapshot doc : value) {
                         RecyclerViewAdapter.this.contentDTOS.add(doc.toObject(ContentDTO.class));
@@ -109,10 +108,6 @@ public class DetailViewFragment extends Fragment {
             //((CustomViewHolder)holder)한 이유는 holder가 본인이 CustomViewHolder인지 모르기 때문에 캐스팅해줌
             //텍스트뷰에 게시글 작성자 email 담기
             ((CustomViewHolder) holder).detail_user_name.setText(contentDTOS.get(position).userId);
-
-            //이미지뷰에 프로필 사진 담기
-            ///Glide.with(holder.itemView.getContext()).load(contentDTOS.get(position).imageUrl).into(((CustomViewHolder) holder).detail_profile_img); //프로필이미지
-
             //이미지뷰에 게시글 이미지 담기
             Glide.with(holder.itemView.getContext()).load(contentDTOS.get(position).imageUrl).into(((CustomViewHolder) holder).detail_content_img);
             //텍스트뷰에 좋아요 개수 담기
@@ -123,10 +118,7 @@ public class DetailViewFragment extends Fragment {
             //좋아요 버튼 클릭 이벤트
             ((CustomViewHolder) holder).btn_favorite.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    favoritEvent(position);
-                }
-            });
+                public void onClick(View v) { favoritEvent(position); }});
 
             //좋아요 하트 채워지기 이벤트
             //conentDTOS의 favorites 리스트에 저장된 containKey가 false 나오면 채워진 하트 이미지로 변경 (리스트에 uid가 없기 때문에 좋아요를 안 누른 것으로 판단)
@@ -210,29 +202,33 @@ public class DetailViewFragment extends Fragment {
         //좋아요 누르기 이벤트
         public void favoritEvent(int position) {
 
-            firestore.runTransaction(transaction -> {
-                String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                ContentDTO contentDTO = transaction.get(firestore.collection("images")
-                        .document(contentUidList.get(position))).toObject(ContentDTO.class);
+            firestore.runTransaction(new Transaction.Function<Transaction>() {
+                @Nullable
+                @Override
+                public Transaction apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                    String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    ContentDTO contentDTO = transaction.get(firestore.collection("images")
+                            .document(contentUidList.get(position))).toObject(ContentDTO.class);
 
-                //맵에서 인자로 보낸 키 -> containsKey
-                if (contentDTO.favorities.containsKey(uid)) {
-                    //좋아요가 눌렸을 때 - 좋아요를 취소하는 이벤트
-                    //눌린 상태여서 취소해야하기 때문에 좋아요 개수 -1과 좋아요 누른 유저의 정보를 삭제해야 함
-                    contentDTO.favoriteCount = contentDTO.favoriteCount - 1;
-                    contentDTO.favorities.remove(uid);
-                } else {
-                    //좋아요가 눌려있지 않을 때 - 좋아요를 누르는 이벤트
-                    //좋아요가 눌리지 않은 상태라서 좋아요를 누르면 개수 +1과 좋아요 누른 유저의 정보가 등록되어야 함
-                    contentDTO.favoriteCount = contentDTO.favoriteCount + 1;
-                    //누른 사람의 uid를 contentDTO.favorities에 put 해야 구분할 수 있음
-                    contentDTO.favorities.put(uid, true);
-                    favoriteAlarm(contentDTOS.get(position).uid); //카운터가 올라가는 사람이름 알림
+                    //맵에서 인자로 보낸 키 -> containsKey
+                    if (contentDTO.favorities.containsKey(uid)) {
+                        //좋아요가 눌렸을 때 - 좋아요를 취소하는 이벤트
+                        //눌린 상태여서 취소해야하기 때문에 좋아요 개수 -1과 좋아요 누른 유저의 정보를 삭제해야 함
+                        contentDTO.favoriteCount = contentDTO.favoriteCount - 1;
+                        contentDTO.favorities.remove(uid);
+                    } else {
+                        //좋아요가 눌려있지 않을 때 - 좋아요를 누르는 이벤트
+                        //좋아요가 눌리지 않은 상태라서 좋아요를 누르면 개수 +1과 좋아요 누른 유저의 정보가 등록되어야 함
+                        contentDTO.favoriteCount = contentDTO.favoriteCount + 1;
+                        //누른 사람의 uid를 contentDTO.favorities에 put 해야 구분할 수 있음
+                        contentDTO.favorities.put(uid, true);
+                        RecyclerViewAdapter.this.favoriteAlarm(contentDTOS.get(position).uid); //카운터가 올라가는 사람이름 알림
+                    }
+
+                    //트랜잭션을 다시 서버로 돌려준다.
+                    return transaction.set(firestore.collection("images")
+                            .document(contentUidList.get(position)), contentDTO);
                 }
-
-                //트랜잭션을 다시 서버로 돌려준다.
-                return transaction.set(firestore.collection("images")
-                        .document(contentUidList.get(position)), contentDTO);
             });
         }
 

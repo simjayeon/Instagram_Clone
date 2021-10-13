@@ -8,11 +8,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,6 +24,12 @@ import com.example.instagram_clone.model.AlarmDTO;
 import com.example.instagram_clone.model.ContentDTO;
 import com.example.instagram_clone.model.FollowDTO;
 import com.example.instagram_clone.ui.activity.LoginActivity;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -64,7 +72,6 @@ public class UserFragment extends Fragment {
 
         userFragmentAdapter = new UserFragmentAdapter(uid);
 
-
         recyclerView = view.findViewById(R.id.account_recyclerView);
         btn_follow = view.findViewById(R.id.btn_follow);
         account_iv_profile = view.findViewById(R.id.account_iv_profile);
@@ -82,7 +89,7 @@ public class UserFragment extends Fragment {
 
         currentUserId = firebaseAuth.getCurrentUser().getUid();
 
-        //상대 프로필잉ㄴ지 나인지 확인하기
+        //상대 프로필인지 나인지 확인하기
         if (uid != null && uid.equals(currentUserId)){
             //프로필이 나일 때
             user_page_id.setText(selectUserid); //프로필 이름 변경
@@ -90,12 +97,12 @@ public class UserFragment extends Fragment {
             btn_follow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    getActivity().finish();
                     startActivity(new Intent(getActivity(), LoginActivity.class));
                     firebaseAuth.signOut();  //종료되는거 수정필요
+                    getActivity().finish();
                 }
             });
-        }else if(uid != null && !uid.equals(currentUserId)){
+        }else if(uid != null){
             //프로필이 다른 사람일 때
             user_page_id.setText(selectUserid);
             btn_follow.setText(R.string.follow);

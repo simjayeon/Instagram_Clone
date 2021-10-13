@@ -31,10 +31,6 @@ import java.util.ArrayList;
 public class GridFragment extends Fragment {
     View fragmentView;
     FirebaseFirestore firestore;
-    String uid;
-    FirebaseAuth auth;
-    String currentUserUid;
-    Button account_btn_follow_signout;
     RecyclerView recyclerView;
 
     @Nullable
@@ -42,55 +38,35 @@ public class GridFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         fragmentView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_grid, container, false);
 
-        firestore = FirebaseFirestore.getInstance(); //메모리 낭비할 필요 없이, 객체를 로딩 시간이 줄어듬
-        //한번 생성해두면 객체 로딩 시간이 줄어듬
+        firestore = FirebaseFirestore.getInstance();
 
-        //currentUserUid = auth.getCurrentUser().getUid();
-        //뷰보다 뷰 그룹에서 문제가 됨 (무거운 작업)
         recyclerView = fragmentView.findViewById(R.id.gridfragment_recyclerview);
 
-        //Adapter은 연결해주는 역할
+        //Adapter 연결해주는 역할
         recyclerView.setAdapter(new GridFragmentAdapter()); //어댑터 설정
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 3));
-/*
-        if(uid == currentUserUid){
-            // 회원정보 페이지
-            account_btn_follow_signout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
 
-                }
-            });
-        }
- */
         return fragmentView;
     }
 
 
     public class GridFragmentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        ArrayList<ContentDTO> contentDTOS; //data transfer object 프로세스 간의 데이터를 전달하는 객체다.
-        ArrayList<String> contentUidList = new ArrayList<>();
-
+        ArrayList<ContentDTO> contentDTOS; //data transfer object 프로세스 간의 데이터를 전달하는 객체
 
         public GridFragmentAdapter(){
             contentDTOS = new ArrayList<>();
             //파이어스토어에서 데이터 값 읽어오기
-            //내가 올린 이미지만 뜰 수 있도록.whereEqualTo("uid", uid) -> uid 값이 내 uid값 일때만
-
-            //images를 저장하는 콜렉션
             firestore.collection("images").addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                     if(value == null){
                         //쿼리값이 없을 때 바로 종료시키는 것 (오류 방지)
                     }
-
-                    //e데이터를 받아주는 부분
-                    //추출할 수 있다.
+                    //데이터를 받아주는 부분
                     for(QueryDocumentSnapshot doc : value){
                         contentDTOS.add(doc.toObject(ContentDTO.class));
                     }
-                    notifyDataSetChanged(); //새로고치ㅣㅁ되도록
+                    notifyDataSetChanged(); //새로고침
                 }
             });
         }
@@ -104,7 +80,6 @@ public class GridFragment extends Fragment {
 
             //폭의 값을 이미지뷰에 넣음 (정사각형 이미지)
             //getContext는 추상클래스, 애플리케이션의 현재 상태
-            //parent는 RecyclerView
             ImageView imageView = new ImageView(parent.getContext());
             //3*3
             imageView.setLayoutParams(new LinearLayoutCompat.LayoutParams(width, width));
@@ -126,12 +101,15 @@ public class GridFragment extends Fragment {
             return contentDTOS.size();
         }
 
+
+        //한번 생성해두면 객체 로딩 시간이 줄어듬
+        //메모리 낭비할 필요 없이, 객체를 로딩 시간이 줄어듬
         private class CustomViewHolder extends RecyclerView.ViewHolder {
             ImageView imageView;
 
             public CustomViewHolder(ImageView imageView) {
                 super(imageView);
-                this.imageView = imageView; //??
+                this.imageView = imageView;
 
             }
         }

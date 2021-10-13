@@ -6,7 +6,7 @@ import java.util.Map;
 //게시글
 public class ContentDTO{
 
-    //public을 사용해주지 않으면 다른 액티비티가 참조를 못함 -> 맞는지 확인필요
+    //public을 사용해주지 않으면 다른 액티비티가 참조를 못함
 
     public String explain;
     public String imageUrl;
