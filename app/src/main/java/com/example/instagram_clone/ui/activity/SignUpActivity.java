@@ -77,9 +77,8 @@ public class SignUpActivity extends AppCompatActivity {
     public void onBackPressed() {
         AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
         builder.setMessage("회원가입을 종료하시겠습니까?")
-                .setPositiveButton("예", (dialog, which) -> {
-                    super.onBackPressed();
-                }).setNegativeButton("아니오", (dialog, which) -> {
+                .setPositiveButton("예", (dialog, which) -> super.onBackPressed())
+                .setNegativeButton("아니오", (dialog, which) -> {
                     dialog.dismiss(); //대화상자 닫기
                 }).show();
     }
