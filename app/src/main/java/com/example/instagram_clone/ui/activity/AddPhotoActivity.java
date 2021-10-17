@@ -52,12 +52,7 @@ public class AddPhotoActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
 
-        imgView_photo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                pickAlbum();
-            }
-        });
+        imgView_photo.setOnClickListener(view -> pickAlbum());
 
         pickAlbum();
 
@@ -88,10 +83,7 @@ public class AddPhotoActivity extends AppCompatActivity {
         });
 
         //업로드 버튼 눌렀을 때 이벤트 -> contentUpload() 호출
-        btn_add_Photo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) { contentUpload(); }
-        });
+        btn_add_Photo.setOnClickListener(v -> contentUpload());
     }
 
     @Override
@@ -124,31 +116,24 @@ public class AddPhotoActivity extends AppCompatActivity {
 
         //업로드(Callback method)
         //참조한 스토리지에서 photoUri
-        storageRef.putFile(photoUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-               storageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                   @Override
-                   public void onSuccess(Uri uri) {
-                       ContentDTO contentDTO = new ContentDTO();
-                       //insert downloadUrl of image
-                       contentDTO.imageUrl = uri.toString();
-                       //Insert uid of user
-                       contentDTO.uid = firebaseAuth.getCurrentUser().getUid(); //현재 접속된 사용자
-                       //insert userId
-                       contentDTO.userId = firebaseAuth.getCurrentUser().getEmail();
-                       //explanin of content
-                       contentDTO.explain = edit_content.getText().toString();
-                       //insertTimeStamp
-                       contentDTO.timestamp = System.currentTimeMillis();
+        storageRef.putFile(photoUri).addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+            ContentDTO contentDTO = new ContentDTO();
+            //insert downloadUrl of image
+            contentDTO.imageUrl = uri.toString();
+            //Insert uid of user
+            contentDTO.uid = firebaseAuth.getCurrentUser().getUid(); //현재 접속된 사용자
+            //insert userId
+            contentDTO.userId = firebaseAuth.getCurrentUser().getEmail();
+            //explanin of content
+            contentDTO.explain = edit_content.getText().toString();
+            //insertTimeStamp
+            contentDTO.timestamp = System.currentTimeMillis();
 
-                       firestore.collection("images").document().set(contentDTO);
-                       setResult(RESULT_OK); // 정상적으로 닫혔다는 플래그를 넘겨주기 위해서 Result_ok 값 넘겨줌
-                       finish();
-                   }
-               });
-            }
-        });
+            firestore.collection("images").document().set(contentDTO);
+            setResult(RESULT_OK); // 정상적으로 닫혔다는 플래그를 넘겨주기 위해서 Result_ok 값 넘겨줌
+            finish();
+        }));
     }
 
     public void pickAlbum(){

@@ -56,18 +56,15 @@ public class GridFragment extends Fragment {
         public GridFragmentAdapter(){
             contentDTOS = new ArrayList<>();
             //파이어스토어에서 데이터 값 읽어오기
-            firestore.collection("images").addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                    if(value == null){
-                        //쿼리값이 없을 때 바로 종료시키는 것 (오류 방지)
-                    }
-                    //데이터를 받아주는 부분
-                    for(QueryDocumentSnapshot doc : value){
-                        contentDTOS.add(doc.toObject(ContentDTO.class));
-                    }
-                    notifyDataSetChanged(); //새로고침
+            firestore.collection("images").addSnapshotListener((value, error) -> {
+                if(value == null){
+                    //쿼리값이 없을 때 바로 종료시키는 것 (오류 방지)
                 }
+                //데이터를 받아주는 부분
+                for(QueryDocumentSnapshot doc : value){
+                    contentDTOS.add(doc.toObject(ContentDTO.class));
+                }
+                notifyDataSetChanged(); //새로고침
             });
         }
 

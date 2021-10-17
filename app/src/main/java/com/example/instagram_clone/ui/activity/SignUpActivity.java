@@ -35,12 +35,7 @@ public class SignUpActivity extends AppCompatActivity {
         sign_up_edit_password = (EditText) findViewById(R.id.sign_up_edit_password);
         btn_signUp = (TextView) findViewById(R.id.btn_signup);
 
-        btn_signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                signUp();
-            }
-        });
+        btn_signUp.setOnClickListener(v -> signUp());
 
     }
 

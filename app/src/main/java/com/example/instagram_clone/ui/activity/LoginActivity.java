@@ -122,19 +122,16 @@ public class LoginActivity extends AppCompatActivity {
     //로그인
     public void signIn(){
         firebaseAuth.signInWithEmailAndPassword(edit_email.getText().toString(), edit_password.getText().toString())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            //로그인 성공 시
-                            moveMainPage(task.getResult().getUser());
-                            System.out.println(task.getResult().getUser()+"어떤가");
-                        }else{
-                            //회원가입 실패시
-                            Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
-                        }
-
+                .addOnCompleteListener(this, task -> {
+                    if(task.isSuccessful()){
+                        //로그인 성공 시
+                        moveMainPage(task.getResult().getUser());
+                        System.out.println(task.getResult().getUser()+"어떤가");
+                    }else{
+                        //회원가입 실패시
+                        Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
                     }
+
                 });
     }
 
@@ -171,15 +168,12 @@ public class LoginActivity extends AppCompatActivity {
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            moveMainPage(task.getResult().getUser());
-                            finish();
-                        }else {
-                            System.out.println("계정 인증 실패");
-                        }
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        moveMainPage(task.getResult().getUser());
+                        finish();
+                    }else {
+                        System.out.println("계정 인증 실패");
                     }
                 });
     }
@@ -209,12 +203,9 @@ public class LoginActivity extends AppCompatActivity {
     private void handleFacebookAccessToken(AccessToken accessToken) {
         AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
         firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            moveMainPage(task.getResult().getUser());
-                        }
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        moveMainPage(task.getResult().getUser());
                     }
                 });
     }

@@ -94,35 +94,24 @@ public class UserFragment extends Fragment {
             //프로필이 나일 때
             user_page_id.setText(selectUserid); //프로필 이름 변경
             btn_follow.setText(R.string.signout); //로그아웃으로 변경
-            btn_follow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(new Intent(getActivity(), LoginActivity.class));
-                    firebaseAuth.signOut();  //종료되는거 수정필요
-                    getActivity().finish();
-                }
+            btn_follow.setOnClickListener(v -> {
+                startActivity(new Intent(getActivity(), LoginActivity.class));
+                firebaseAuth.signOut();  //종료되는거 수정필요
+                getActivity().finish();
             });
         }else if(uid != null){
             //프로필이 다른 사람일 때
             user_page_id.setText(selectUserid);
             btn_follow.setText(R.string.follow);
-            btn_follow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    requestFollow(uid, currentUserId);
-                }
-            });
+            btn_follow.setOnClickListener(v -> requestFollow(uid, currentUserId));
         }
 
 
         //유저프래그먼트에 프로필 사진 올리기
-        account_iv_profile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent photoPickIntent = new Intent(Intent.ACTION_PICK);
-                photoPickIntent.setType("image/*");
-                startActivityForResult(photoPickIntent, PICK_PROFILE_FROM_ALBUM);
-            }
+        account_iv_profile.setOnClickListener(v -> {
+            Intent photoPickIntent = new Intent(Intent.ACTION_PICK);
+            photoPickIntent.setType("image/*");
+            startActivityForResult(photoPickIntent, PICK_PROFILE_FROM_ALBUM);
         });
 
         RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 3);
@@ -137,17 +126,14 @@ public class UserFragment extends Fragment {
 
     //데이터베이스에서 이미지 가져오기 (오류가 여기인가)
     public void getProfileImage(){
-        firestore.collection("profileImages").document(uid).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                if(value.getData() != null){
-                    String url = value.getData().toString();
+        firestore.collection("profileImages").document(uid).addSnapshotListener((value, error) -> {
+            if(value.getData() != null){
+                String url = value.getData().toString();
 
-                    // 여기 오류
-                    //Glide.with(getActivity()).load(url).apply(new RequestOptions().circleCrop()).into(account_iv_profile);
-                }else{
+                // 여기 오류
+                //Glide.with(getActivity()).load(url).apply(new RequestOptions().circleCrop()).into(account_iv_profile);
+            }else{
 
-                }
             }
         });
     }
@@ -268,20 +254,17 @@ public class UserFragment extends Fragment {
             //파이어스토어에서 데이터 값 읽어오기
             //내가 올린 이미지만 뜰 수 있도록.whereEqualTo("uid", uid) -> uid 값이 내 uid값 일때만
 
-            firestore.collection("images").whereEqualTo("uid", uid).addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                    if(value == null){
-                        //쿼리값이 없을 때 바로 종료시키는 것 (오류 방지)
-                    }
-
-                    //데이터를 받아주는 부분
-                    for(QueryDocumentSnapshot doc : value){
-                        contentDTOS.add(doc.toObject(ContentDTO.class));
-                    }
-                    account_post_count.setText(String.valueOf(contentDTOS.size()));
-                    notifyDataSetChanged(); //새로고침
+            firestore.collection("images").whereEqualTo("uid", uid).addSnapshotListener((value, error) -> {
+                if(value == null){
+                    //쿼리값이 없을 때 바로 종료시키는 것 (오류 방지)
                 }
+
+                //데이터를 받아주는 부분
+                for(QueryDocumentSnapshot doc : value){
+                    contentDTOS.add(doc.toObject(ContentDTO.class));
+                }
+                account_post_count.setText(String.valueOf(contentDTOS.size()));
+                notifyDataSetChanged(); //새로고침
             });
         }
 

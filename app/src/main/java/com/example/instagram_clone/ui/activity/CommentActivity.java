@@ -75,19 +75,16 @@ public class CommentActivity extends AppCompatActivity {
         });
 
         //댓글 올리기
-        btn_send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                comments.uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                comments.userId = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-                comments.comment = comment_message.getText().toString();
-                comments.timestamp = System.currentTimeMillis();
+        btn_send.setOnClickListener(v -> {
+            comments.uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            comments.userId = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+            comments.comment = comment_message.getText().toString();
+            comments.timestamp = System.currentTimeMillis();
 
-                FirebaseFirestore.getInstance().collection("images").document(contentUid).collection("comments").document().set(comments);
+            FirebaseFirestore.getInstance().collection("images").document(contentUid).collection("comments").document().set(comments);
 
-                commentAlarm(destinationUid, comment_message.getText().toString());
-                comment_message.setText(""); //데이터 보낸 후 초기화
-            }
+            commentAlarm(destinationUid, comment_message.getText().toString());
+            comment_message.setText(""); //데이터 보낸 후 초기화
         });
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
@@ -119,16 +116,13 @@ public class CommentActivity extends AppCompatActivity {
                     .document(contentUid)
                     .collection("comments")
                     .orderBy("timestamp")
-                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                            commentList.clear();
+                    .addSnapshotListener((value, error) -> {
+                        commentList.clear();
 
-                            for (QueryDocumentSnapshot doc : value) {
-                                commentList.add(doc.toObject(ContentDTO.Comment.class));
-                            }
-                            notifyDataSetChanged(); //새로고침
+                        for (QueryDocumentSnapshot doc : value) {
+                            commentList.add(doc.toObject(ContentDTO.Comment.class));
                         }
+                        notifyDataSetChanged(); //새로고침
                     });
         }
 

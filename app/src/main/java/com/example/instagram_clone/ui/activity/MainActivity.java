@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,6 +24,7 @@ import com.example.instagram_clone.ui.fragment.AlarmFragment;
 import com.example.instagram_clone.ui.fragment.DetailViewFragment;
 import com.example.instagram_clone.ui.fragment.GridFragment;
 import com.example.instagram_clone.ui.fragment.UserFragment;
+import com.facebook.login.Login;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -66,37 +68,34 @@ public class MainActivity extends AppCompatActivity {
 
         //하단바 네비게이션 선택 이벤트 -> 아이템 클릭할 때 프래그먼트 교체 작업
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_NaviBar);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.action_home:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_detail).commit();
-                        return true;
-                    case R.id.action_search:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_grid).commit();
-                        return true;
-                    case R.id.action_add_photo:
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()){
+                case R.id.action_home:
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_detail).commit();
+                    return true;
+                case R.id.action_search:
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_grid).commit();
+                    return true;
+                case R.id.action_add_photo:
 
-                        //권한 요청이 허용이 되었는지 selfCheck 후 권한이 grandted일 경우 AddPhotoActivity로 전환
-                        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == getPackageManager().PERMISSION_GRANTED){
-                            startActivity(new Intent(MainActivity.this, AddPhotoActivity.class));
-                        }
-                        return true;
-                    case R.id.action_favorite_alarm:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_alarm).commit();
-                        return true;
-                    case R.id.action_account:
-                        //uid값 넘겨주기
-                        Bundle bundle = new Bundle();
-                        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                        bundle.putString("destinationUid", uid);
-                        fragment_user.setArguments(bundle);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_user).commit();
-                        return true;
-                }
-                return false;
+                    //권한 요청이 허용이 되었는지 selfCheck 후 권한이 grandted일 경우 AddPhotoActivity로 전환
+                    if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == getPackageManager().PERMISSION_GRANTED){
+                        startActivity(new Intent(MainActivity.this, AddPhotoActivity.class));
+                    }
+                    return true;
+                case R.id.action_favorite_alarm:
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_alarm).commit();
+                    return true;
+                case R.id.action_account:
+                    //uid값 넘겨주기
+                    Bundle bundle = new Bundle();
+                    String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    bundle.putString("destinationUid", uid);
+                    fragment_user.setArguments(bundle);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_content, fragment_user).commit();
+                    return true;
             }
+            return false;
         });
 
         bottomNavigationView.setSelectedItemId(R.id.action_home);
@@ -112,15 +111,12 @@ public class MainActivity extends AppCompatActivity {
             String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             //String profileFileName = "IMAGE_" + uid + ".png";
             StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("userProfileImages").child(uid);
-            storageRef.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    //uri인지 url인지 수정 필요
-                    String url = storageRef.getDownloadUrl().toString();
-                    Map<String, Object> map = new HashMap<String, Object>();
-                    map.put(uid, url);
-                    FirebaseFirestore.getInstance().collection("profileImages").document(uid).set(map);
-                }
+            storageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
+                //uri인지 url인지 수정 필요
+                String url = storageRef.getDownloadUrl().toString();
+                Map<String, Object> map = new HashMap<String, Object>();
+                map.put(uid, url);
+                FirebaseFirestore.getInstance().collection("profileImages").document(uid).set(map);
             });
 
 
