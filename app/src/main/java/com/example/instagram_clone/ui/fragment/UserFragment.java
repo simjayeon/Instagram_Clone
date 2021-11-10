@@ -39,6 +39,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 
@@ -83,8 +84,8 @@ public class UserFragment extends Fragment {
 
         Bundle bundle = this.getArguments();
         if(bundle != null){
-            uid = bundle.getString("destinationUid");
-            selectUserid = bundle.getString("userId");
+            uid = bundle.getString("destinationUid"); //프로필 이미지의 유저 uid
+            selectUserid = bundle.getString("userId");  //유저의 email
         }
 
         currentUserId = firebaseAuth.getCurrentUser().getUid();
@@ -170,37 +171,43 @@ public class UserFragment extends Fragment {
     //먼저 팔로워 리스트에 값이 들어가야할 것 같음 -> 내가 누구를 팔로워/팔로잉 했는지
     public void requestFollow(String uid, String currentUserId){
         // ㅐㄴ 팔로워
-        this.currentUserId = currentUserId; //현재 사용자
         this.uid = uid;
-        firestore.runTransaction(transaction -> {
-            DocumentReference doFollowing = firestore.collection("users").document(this.currentUserId);
-            FollowDTO followDTO = transaction.get(doFollowing).toObject(FollowDTO.class);
+        this.currentUserId = currentUserId;
 
-            System.out.println(this.currentUserId+"current---------"+ followDTO + "몇?");
+        firestore.runTransaction(transaction -> {
+            //DocumentReference doFollowing =
+            FirebaseFirestore.getInstance().collection("users").document(currentUserId);
+            FollowDTO followDTO = transaction.get(FirebaseFirestore.getInstance().collection("users").document(currentUserId)).toObject(FollowDTO.class);
 
             //get을 put으로
             //documentRef 쓰는게 맞는지
             //디비에 안 넣어지는게 문제임
             //조건 1
+
             if(followDTO == null){
-                followDTO.followingCount = 1;
-                followDTO.followers.get(this.uid);
-                transaction.set(doFollowing, followDTO); //db에 담는 것
+                followDTO.followerCount = followDTO.followerCount + 1;
+                followDTO.followers.put(uid, true);
+                transaction.set(FirebaseFirestore.getInstance().collection("users").document(currentUserId), followDTO); //db에 담는 것
+                System.out.println(currentUserId+"current---------"+ followDTO + "몇?");
             }
+
 
             //조건 2
-            if(followDTO.followings.containsKey(this.uid)){
+            if(followDTO.followers.containsKey(uid)){
                 //이미 팔로워 된 uid일 경우
-                followDTO.followingCount = followDTO.followingCount - 1; //팔로워 취소
-                followDTO.followers.remove(this.uid); //uid삭제
-            }else{
+                followDTO.followerCount = followDTO.followerCount - 1; //팔로워 취소
+                followDTO.followers.remove(uid); //uid삭제
+            }else if(followDTO.followers.containsKey(currentUserId)){
                 //팔로워가 되어있지 않은 uid일 경우
-                followDTO.followingCount = followDTO.followingCount + 1; //팔로워
-                followDTO.followers.put(this.uid, true); //uid등록
-                followerAlarm(this.uid);
+                followDTO.followerCount = followDTO.followerCount + 1; //팔로워
+                followDTO.followers.put(uid, true); //uid등록
+                followerAlarm(uid);
+                System.out.println(followDTO.followingCount+"current---------"+ followDTO.followerCount + "몇?");
             }
 
-            return transaction.set(doFollowing, followDTO); //db에 저장
+
+
+            return transaction.set(FirebaseFirestore.getInstance().collection("users").document(currentUserId), followDTO); //db에 저장
         });
 
 

@@ -60,7 +60,7 @@ public class SignUpActivity extends AppCompatActivity {
     //로그인 페이지로 이동
     private void moveMainPage(FirebaseUser user) {
         if(user != null){
-            Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+            Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();
         }
@@ -70,7 +70,7 @@ public class SignUpActivity extends AppCompatActivity {
     //뒤로가기 시 나타나는 이벤트
     @Override
     public void onBackPressed() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("회원가입을 종료하시겠습니까?")
                 .setPositiveButton("예", (dialog, which) -> super.onBackPressed())
                 .setNegativeButton("아니오", (dialog, which) -> {
