@@ -26,7 +26,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
-public class DetailViewFragment extends Fragment {
+public class HomeFragment extends Fragment {
     FirebaseFirestore firestore;
     RecyclerView recyclerView;
     RecyclerViewAdapter recyclerViewAdapter;
@@ -38,7 +38,7 @@ public class DetailViewFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_detail, container, false);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_home, container, false);
         FirebaseApp.initializeApp(getActivity()); //???
 
         firestore = FirebaseFirestore.getInstance(); //파이어스토어 인스턴스 초기화
@@ -212,7 +212,7 @@ public class DetailViewFragment extends Fragment {
         }
 
         //좋아요 알람
-        public void favoriteAlarm(String destinationUid){
+        public void favoriteAlarm(String destinationUid) {
             AlarmDTO alarmDTO = new AlarmDTO();
             alarmDTO.destinationUid = destinationUid;
             alarmDTO.userId = FirebaseAuth.getInstance().getCurrentUser().getEmail();

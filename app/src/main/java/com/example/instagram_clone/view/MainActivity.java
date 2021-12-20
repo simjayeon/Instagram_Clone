@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -22,30 +23,32 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class MainActivity extends BaseActivity<ActivityMainBinding> {
+public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener {
     public MainActivity() {
         super(R.layout.activity_main);
     }
 
     @Override
     protected void initView(Bundle savedInstanceState) {
+        mBinder.mainDmBtn.setOnClickListener(this);
+
         //READ_EXTERNAL_STORAGE : 애플리케이션이 외부 저장소에서 읽을 수 있도록 설정
         //외부 저장소를 읽을 수 있도록 매니페스트에 권한 요청
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
 
-        Fragment fragment_alarm = new AlarmFragment();
-        Fragment fragment_user = new UserFragment();
-        Fragment fragment_detail = new DetailViewFragment();
-        Fragment fragment_grid = new GridFragment();
+        Fragment alarmFragment = new AlarmFragment();
+        Fragment userFragment = new UserFragment();
+        Fragment homeFragment = new HomeFragment();
+        Fragment gridFragment = new GridFragment();
 
         //하단바 네비게이션 선택 이벤트 -> 아이템 클릭할 때 프래그먼트 교체 작업
         mBinder.bottomNaviBar.setOnNavigationItemSelectedListener(item -> {
             int position = item.getItemId();
             Fragment selected = null;
             if (position == R.id.action_home) {
-                selected = fragment_detail;
+                selected = homeFragment;
             } else if (position == R.id.action_search) {
-                selected = fragment_grid;
+                selected = gridFragment;
             } else if (position == R.id.action_add_photo) {
 //                여기 수정@!!!!
                 //권한 요청이 허용이 되었는지 selfCheck 후 권한이 grandted일 경우 AddPhotoActivity로 전환
@@ -53,14 +56,14 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                     startActivity(new Intent(MainActivity.this, AddPhotoActivity.class));
                 }
             } else if (position == R.id.action_favorite_alarm) {
-                selected = fragment_alarm;
+                selected = alarmFragment;
             } else if (position == R.id.action_account) {
                 //uid값 넘겨주기
                 Bundle bundle = new Bundle();
                 String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 bundle.putString("destinationUid", uid);
-                fragment_user.setArguments(bundle);
-                selected = fragment_user;
+                userFragment.setArguments(bundle);
+                selected = userFragment;
             }
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content, selected).commit();
             return false;
@@ -91,4 +94,12 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        int viewId = v.getId();
+        if (viewId == R.id.main_dm_btn) {
+            Intent intent = new Intent(this, DirectMessageActivity.class);
+            startActivity(intent);
+        }
+    }
 }

@@ -22,7 +22,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
-            android:id="@+id/main_send_btn"
+            android:id="@+id/main_dm_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
