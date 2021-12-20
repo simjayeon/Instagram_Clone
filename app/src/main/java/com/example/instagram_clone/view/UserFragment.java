@@ -1,4 +1,4 @@
-package com.example.instagram_clone.ui.fragment;
+package com.example.instagram_clone.view;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,13 +8,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,23 +21,11 @@ import com.example.instagram_clone.R;
 import com.example.instagram_clone.model.AlarmDTO;
 import com.example.instagram_clone.model.ContentDTO;
 import com.example.instagram_clone.model.FollowDTO;
-import com.example.instagram_clone.ui.activity.LoginActivity;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.ArrayList;
 
@@ -174,7 +160,7 @@ public class UserFragment extends Fragment {
         this.uid = uid;
         this.currentUserId = currentUserId;
 
-        firestore.runTransaction(transaction -> {
+        FirebaseFirestore.getInstance().runTransaction(transaction -> {
             //DocumentReference doFollowing =
             FirebaseFirestore.getInstance().collection("users").document(currentUserId);
             FollowDTO followDTO = transaction.get(FirebaseFirestore.getInstance().collection("users").document(currentUserId)).toObject(FollowDTO.class);
@@ -184,11 +170,10 @@ public class UserFragment extends Fragment {
             //디비에 안 넣어지는게 문제임
             //조건 1
 
-            if(followDTO == null){
+            if(followDTO.followers == null){
                 followDTO.followerCount = followDTO.followerCount + 1;
                 followDTO.followers.put(uid, true);
                 transaction.set(FirebaseFirestore.getInstance().collection("users").document(currentUserId), followDTO); //db에 담는 것
-                System.out.println(currentUserId+"current---------"+ followDTO + "몇?");
             }
 
 

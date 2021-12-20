@@ -1,4 +1,4 @@
-package com.example.instagram_clone.ui.activity;
+package com.example.instagram_clone.view;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -13,21 +13,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.model.AlarmDTO;
 import com.example.instagram_clone.model.ContentDTO;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -60,7 +55,7 @@ public class CommentActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 message = comment_message.getText().toString();
-                if(message.length() == 0){
+                if (message.length() == 0) {
                     btn_send.setEnabled(false);
                     btn_send.setBackgroundColor(Color.GRAY);
                 } else {
@@ -95,8 +90,8 @@ public class CommentActivity extends AppCompatActivity {
     }
 
     //댓글 알림 기능
-    public void commentAlarm(String destinationUid, String message){
-        AlarmDTO alarmDTO  = new AlarmDTO();
+    public void commentAlarm(String destinationUid, String message) {
+        AlarmDTO alarmDTO = new AlarmDTO();
         alarmDTO.destinationUid = destinationUid;
         alarmDTO.userId = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         alarmDTO.kind = 1;
@@ -106,11 +101,11 @@ public class CommentActivity extends AppCompatActivity {
         FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO);
     }
 
-    public class CommentRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+    public class CommentRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         ArrayList<ContentDTO.Comment> commentList = new ArrayList<>();
 
-        public CommentRecyclerViewAdapter(){
+        public CommentRecyclerViewAdapter() {
 
             FirebaseFirestore.getInstance().collection("images")
                     .document(contentUid)

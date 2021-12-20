@@ -1,4 +1,4 @@
-package com.example.instagram_clone.ui.fragment;
+package com.example.instagram_clone.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

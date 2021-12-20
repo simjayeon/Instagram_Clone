@@ -15,7 +15,7 @@ public class ContentDTO{
     public long timestamp;
     public int favoriteCount;
     public Map<String, Boolean> favorities = new HashMap<>();
-    //public Map<String, Comment> comments;
+    public Map<String, Comment> comments;
 
 
     //댓글
