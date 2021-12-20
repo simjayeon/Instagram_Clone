@@ -145,6 +145,7 @@ public class HomeFragment extends Fragment {
                 Intent intent = new Intent(getView().getContext(), CommentActivity.class);
                 //intent할 때 contentUidList와 contentDTOS의 uid값과 함께 이동함
                 //아이콘을 선택한 사용자의 uid와 댓글이 달리는 게시물의 작성자의 uid를 확인하기 위해서 함께 이동함
+                intent.putExtra("image", contentDTOS.get(position).imageUrl);
                 intent.putExtra("contentUid", contentUidList.get(position));
                 intent.putExtra("destinationUid", contentDTOS.get(position).uid);
                 startActivity(intent); //이동

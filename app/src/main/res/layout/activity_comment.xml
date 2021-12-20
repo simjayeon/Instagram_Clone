@@ -1,58 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.CommentActivity">
 
-        <!-- 상단 툴바  -->
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/comment_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            app:contentInsetStart="0dp"
-            android:layout_marginTop="4dp">
+    <!-- 상단 툴바  -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/comment_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        app:contentInsetStart="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
-                    android:id="@+id/comment_toolbar_logo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/logo_title"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"/>
+        <ImageView
+            android:id="@+id/comment_toolbar_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/logo_title" />
 
-        </androidx.appcompat.widget.Toolbar>
+    </androidx.appcompat.widget.Toolbar>
 
     <View
         android:id="@+id/line"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_below="@id/comment_toolbar"
-        android:background="@color/colorLightGray"/>
+        android:background="@color/colorLightGray"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/comment_toolbar" />
+
+    <ImageView
+        android:id="@+id/comment_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/line" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/comment_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/line"/>
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/comment_message_edit" />
+
+    <EditText
+        android:id="@+id/comment_message_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:inputType="text"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/comment_image_view" />
 
     <Button
         android:id="@+id/btn_send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="send"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/comment_recycler_view"
-        android:layout_margin="10dp"/>
-    
-    <EditText
-        android:id="@+id/comment_message_edit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text"
         android:layout_margin="10dp"
-        android:layout_below="@id/comment_recycler_view"
-        android:layout_toLeftOf="@id/btn_send"/>
+        android:text="send"
+        android:textColor="@color/black"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/comment_image_view" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.model.AlarmDTO;
 import com.example.instagram_clone.model.ContentDTO;
@@ -30,9 +31,10 @@ public class CommentActivity extends AppCompatActivity {
     Button btn_send;
     ContentDTO.Comment comments = new ContentDTO.Comment();
     EditText comment_message;
-    String contentUid, destinationUid;
+    String contentUid, destinationUid, image;
     RecyclerView commentRecyclerView;
     String message;
+    ImageView imageView;
 
 
     @Override
@@ -40,12 +42,16 @@ public class CommentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment);
 
+        image = getIntent().getStringExtra("image");
         contentUid = getIntent().getStringExtra("contentUid");
         destinationUid = getIntent().getStringExtra("destinationUid");
 
+        imageView = findViewById(R.id.comment_image_view);
         comment_message = findViewById(R.id.comment_message_edit);
         commentRecyclerView = findViewById(R.id.comment_recycler_view);
         btn_send = findViewById(R.id.btn_send);
+
+        Glide.with(this).load(image).into(imageView);
 
         comment_message.addTextChangedListener(new TextWatcher() {
             @Override
