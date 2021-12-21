@@ -46,26 +46,25 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
             int position = item.getItemId();
             Fragment selected = null;
             if (position == R.id.action_home) {
-                selected = homeFragment;
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_content, homeFragment).commit();
             } else if (position == R.id.action_search) {
-                selected = gridFragment;
-            } else if (position == R.id.action_add_photo) {
-//                여기 수정@!!!!
-                //권한 요청이 허용이 되었는지 selfCheck 후 권한이 grandted일 경우 AddPhotoActivity로 전환
-                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == getPackageManager().PERMISSION_GRANTED) {
-                    startActivity(new Intent(MainActivity.this, AddPhotoActivity.class));
-                }
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_content, gridFragment).commit();
             } else if (position == R.id.action_favorite_alarm) {
-                selected = alarmFragment;
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_content, alarmFragment).commit();
             } else if (position == R.id.action_account) {
                 //uid값 넘겨주기
                 Bundle bundle = new Bundle();
                 String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 bundle.putString("destinationUid", uid);
                 userFragment.setArguments(bundle);
-                selected = userFragment;
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_content, userFragment).commit();
+            } else if (position == R.id.action_add_photo) {
+//                여기 수정@!!!!
+                //권한 요청이 허용이 되었는지 selfCheck 후 권한이 grandted일 경우 AddPhotoActivity로 전환
+                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == getPackageManager().PERMISSION_GRANTED) {
+                    startActivity(new Intent(MainActivity.this, AddPhotoActivity.class));
+                }
             }
-            getSupportFragmentManager().beginTransaction().replace(R.id.main_content, selected).commit();
             return false;
         });
     }
