@@ -1,47 +1,37 @@
 package com.example.instagram_clone.view;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.instagram_clone.R;
+import com.example.instagram_clone.databinding.ActivitySignUpBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class SignUpActivity extends AppCompatActivity {
+public class SignUpActivity extends BaseActivity<ActivitySignUpBinding> {
     FirebaseAuth firebaseAuth;
-    TextView sign_up_edit_email,
-            sign_up_edit_password,
-            btn_signUp;
+
+    public SignUpActivity() {
+        super(R.layout.activity_sign_up);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
-
+    protected void initView(Bundle savedInstanceState) {
         firebaseAuth = FirebaseAuth.getInstance();
-        sign_up_edit_email = (EditText) findViewById(R.id.sign_up_edit_email);
-        sign_up_edit_password = (EditText) findViewById(R.id.sign_up_edit_password);
-        btn_signUp = (TextView) findViewById(R.id.btn_signup);
-
-        btn_signUp.setOnClickListener(v -> signUp());
-
+        mBinder.btnSignup.setOnClickListener(v -> signUp());
     }
 
 
     //회원가입 메소드
-    public void signUp(){
-        firebaseAuth.createUserWithEmailAndPassword(sign_up_edit_email.getText().toString(), sign_up_edit_password.getText().toString())
+    public void signUp() {
+        firebaseAuth.createUserWithEmailAndPassword(mBinder.signUpEditEmail.getText().toString(), mBinder.signUpEditPassword.getText().toString())
                 .addOnCompleteListener(this, task -> {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         moveMainPage(task.getResult().getUser());
-                    }else{
-                        Toast.makeText(SignUpActivity.this, "회원가입 실패", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show();
                     }
 
                 });
@@ -50,7 +40,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     //로그인 페이지로 이동
     private void moveMainPage(FirebaseUser user) {
-        if(user != null){
+        if (user != null) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
             finish();

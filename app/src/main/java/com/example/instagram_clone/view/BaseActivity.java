@@ -32,12 +32,3 @@ public abstract class BaseActivity<T extends ViewDataBinding> extends AppCompatA
 
     protected abstract void initView(Bundle savedInstanceState);
 }
-
-//    protected void initToolbar() {
-//        Object object = findViewById(R.id.toolbar);
-//        if (object == null) return;
-//
-//        View view = findViewById(R.id.btn_alarm);
-//        Intent intent = new Intent(this, AlarmActivity.class);
-//        if (view != null) view.setOnClickListener(v -> startActivity(intent));
-//    }

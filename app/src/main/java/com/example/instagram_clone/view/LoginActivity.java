@@ -1,8 +1,5 @@
 package com.example.instagram_clone.view;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,7 +7,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
 import com.example.instagram_clone.R;
+import com.example.instagram_clone.databinding.ActivityLoginBinding;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -33,7 +33,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.Arrays;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
 
     private FirebaseAuth firebaseAuth; // FirebaseAuth 객체의 공유 인스턴스
     private GoogleSignInClient googleSignInClient; // 구글
@@ -43,12 +43,12 @@ public class LoginActivity extends AppCompatActivity {
     TextView btn_login, btn_signUp, btn_login_google, btn_login_facebook;
     EditText edit_email, edit_password;
 
+    public LoginActivity() {
+        super(R.layout.activity_login);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
+    protected void initView(Bundle savedInstanceState) {
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
         callbackManager = CallbackManager.Factory.create();
@@ -73,13 +73,12 @@ public class LoginActivity extends AppCompatActivity {
         btn_signUp.setOnClickListener(this::onClick);
         btn_login_google.setOnClickListener(this::onClick);
         btn_login_facebook.setOnClickListener(this::onClick);
-
     }
 
 
     //로그인, 회원가입 onClick 이벤트
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.btn_login:
                 signIn();
                 break;
@@ -110,14 +109,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     //로그인
-    public void signIn(){
+    public void signIn() {
         firebaseAuth.signInWithEmailAndPassword(edit_email.getText().toString(), edit_password.getText().toString())
                 .addOnCompleteListener(this, task -> {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         //로그인 성공 시
                         moveMainPage(task.getResult().getUser());
-                        System.out.println(task.getResult().getUser()+"어떤가");
-                    }else{
+                        System.out.println(task.getResult().getUser() + "어떤가");
+                    } else {
                         //회원가입 실패시
                         Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
                     }
@@ -126,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    public void googleLogin(){
+    public void googleLogin() {
         Intent intent = googleSignInClient.getSignInIntent(); //구글 클라이언트에서 로그인화면으로 이동
         startActivityForResult(intent, 1);
     }
@@ -135,23 +134,22 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1 && resultCode == RESULT_OK){
+        if (requestCode == 1 && resultCode == RESULT_OK) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            if(task.isSuccessful()){
+            if (task.isSuccessful()) {
                 //로그인 성공일 경우
-                try{
+                try {
                     GoogleSignInAccount acct = task.getResult(ApiException.class);
                     firebaseAuthWithGoogle(acct.getIdToken());
 
-                }catch (ApiException e){
+                } catch (ApiException e) {
                 }
-            }else{
+            } else {
                 //로그인 실패일 경우
                 Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
             }
         }
     }
-
 
 
     //구글 로그인 정보 파이어베이스에 저장
@@ -162,7 +160,7 @@ public class LoginActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         moveMainPage(task.getResult().getUser());
                         finish();
-                    }else {
+                    } else {
                         System.out.println("계정 인증 실패");
                     }
                 });
@@ -201,16 +199,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-
-
     //메인 페이지로 이동 메소드
-    public void moveMainPage(FirebaseUser user){
-        if (user != null){ //파이어베이스 유저상태가 있을 경우 아래 실행
+    public void moveMainPage(FirebaseUser user) {
+        if (user != null) { //파이어베이스 유저상태가 있을 경우 아래 실행
             startActivity(new Intent(this, MainActivity.class));
             finish();
         }
     }
-
 
 
 }

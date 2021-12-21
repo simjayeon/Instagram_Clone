@@ -33,7 +33,7 @@ public class AlarmFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_alarm,container,false);
+        View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_alarm, container, false);
 
         alarmfragment_recyclerview = view.findViewById(R.id.alarmfragment_recyclerview);
 
@@ -45,7 +45,7 @@ public class AlarmFragment extends Fragment {
         return view;
     }
 
-    class AlarmRecyclerviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+    class AlarmRecyclerviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ArrayList<AlarmDTO> alarmDTOArrayList = new ArrayList<>(); // 인스턴스화, 초기화
 
         public AlarmRecyclerviewAdapter() {
@@ -60,11 +60,10 @@ public class AlarmFragment extends Fragment {
                             value.getDocuments();
                             alarmDTOArrayList.clear();
 
-                            if(value == null){
+                            if (value == null) {
                             }
 
-                            for(QueryDocumentSnapshot doc : value)
-                            {
+                            for (QueryDocumentSnapshot doc : value) {
                                 AlarmRecyclerviewAdapter.this.alarmDTOArrayList.add(doc.toObject(AlarmDTO.class));
                             }
                             notifyDataSetChanged();
@@ -86,21 +85,21 @@ public class AlarmFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            ((CustomViewHolder)holder).comment_profile_id.setVisibility(View.GONE);
+            ((CustomViewHolder) holder).comment_profile_id.setVisibility(View.GONE);
 
-            switch (alarmDTOArrayList.get(position).kind){
+            switch (alarmDTOArrayList.get(position).kind) {
                 case 0:
-                    ((CustomViewHolder)holder).comment_profile_img.setImageResource(R.drawable.noun_like_1638902);
-                    String str_0 = alarmDTOArrayList.get(position).userId  + " " +  getString(R.string.alarm_favorite);
+                    ((CustomViewHolder) holder).comment_profile_img.setImageResource(R.drawable.noun_like_1638902);
+                    String str_0 = alarmDTOArrayList.get(position).userId + " " + getString(R.string.alarm_favorite);
                     ((CustomViewHolder) holder).comment_comment_txt.setText(str_0);
                     break;
                 case 1:
-                    ((CustomViewHolder)holder).comment_profile_img.setImageResource(R.drawable.noun_commend);
+                    ((CustomViewHolder) holder).comment_profile_img.setImageResource(R.drawable.noun_commend);
                     String str_1 = alarmDTOArrayList.get(position).userId + " " + getString(R.string.alarm_comment) + " of " + "\"" + alarmDTOArrayList.get(position).message + "\"";
                     ((CustomViewHolder) holder).comment_comment_txt.setText(str_1);
                     break;
                 case 2:
-                    ((CustomViewHolder)holder).comment_profile_img.setImageResource(R.drawable.user);
+                    ((CustomViewHolder) holder).comment_profile_img.setImageResource(R.drawable.user);
                     String str_2 = alarmDTOArrayList.get(position).userId + " " + getString(R.string.alarm_follow);
                     ((CustomViewHolder) holder).comment_comment_txt.setText(str_2);
                     break;

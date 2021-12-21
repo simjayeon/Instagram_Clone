@@ -26,7 +26,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements View.OnClickListener {
     FirebaseFirestore firestore;
     RecyclerView recyclerView;
     RecyclerViewAdapter recyclerViewAdapter;
@@ -35,11 +35,16 @@ public class HomeFragment extends Fragment {
     //프래그먼트 간의 데이터 전송을 위해
     Fragment fragment_user = new UserFragment();
 
+    ImageView imageView;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_home, container, false);
         FirebaseApp.initializeApp(getActivity()); //???
+
+        imageView = view.findViewById(R.id.home_dm_btn);
+        imageView.setOnClickListener(this);
 
         firestore = FirebaseFirestore.getInstance(); //파이어스토어 인스턴스 초기화
 
@@ -51,6 +56,17 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(recyclerViewAdapter);
 
         return view;
+    }
+
+    @Override
+    public void onClick(View v) {
+        int viewId = v.getId();
+        if (viewId == R.id.home_dm_btn) {
+            Intent intent = new Intent(getActivity(), DirectMessageActivity.class);
+            startActivity(intent);
+        } else if (viewId == R.id.icon_back_btn) {
+            getActivity().onBackPressed();
+        }
     }
 
     //게시물을 띄울 RecyclerView의 Adapter

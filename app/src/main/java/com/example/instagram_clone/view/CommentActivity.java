@@ -7,18 +7,16 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.instagram_clone.R;
+import com.example.instagram_clone.databinding.ActivityCommentBinding;
 import com.example.instagram_clone.model.AlarmDTO;
 import com.example.instagram_clone.model.ContentDTO;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,46 +25,39 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
-public class CommentActivity extends AppCompatActivity {
-    Button btn_send;
+public class CommentActivity extends BaseActivity<ActivityCommentBinding> implements View.OnClickListener {
     ContentDTO.Comment comments = new ContentDTO.Comment();
-    EditText comment_message;
     String contentUid, destinationUid, image;
-    RecyclerView commentRecyclerView;
     String message;
-    ImageView imageView;
 
+    public CommentActivity() {
+        super(R.layout.activity_comment);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_comment);
+    protected void initView(Bundle savedInstanceState) {
+        mBinder.iconBackBtn.setOnClickListener(this);
 
         image = getIntent().getStringExtra("image");
         contentUid = getIntent().getStringExtra("contentUid");
         destinationUid = getIntent().getStringExtra("destinationUid");
 
-        imageView = findViewById(R.id.comment_image_view);
-        comment_message = findViewById(R.id.comment_message_edit);
-        commentRecyclerView = findViewById(R.id.comment_recycler_view);
-        btn_send = findViewById(R.id.btn_send);
+        Glide.with(this).load(image).into(mBinder.commentImageView);
 
-        Glide.with(this).load(image).into(imageView);
-
-        comment_message.addTextChangedListener(new TextWatcher() {
+        mBinder.commentMessageEdit.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int before, int count) {
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                message = comment_message.getText().toString();
+                message = mBinder.commentMessageEdit.getText().toString();
                 if (message.length() == 0) {
-                    btn_send.setEnabled(false);
-                    btn_send.setBackgroundColor(Color.GRAY);
+                    mBinder.btnSend.setEnabled(false);
+                    mBinder.btnSend.setBackgroundColor(Color.GRAY);
                 } else {
-                    btn_send.setEnabled(true);
-                    btn_send.setBackgroundColor(Color.BLUE);
+                    mBinder.btnSend.setEnabled(true);
+                    mBinder.btnSend.setBackgroundColor(Color.BLUE);
                 }
             }
 
@@ -76,22 +67,22 @@ public class CommentActivity extends AppCompatActivity {
         });
 
         //댓글 올리기
-        btn_send.setOnClickListener(v -> {
+        mBinder.btnSend.setOnClickListener(v -> {
             comments.uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
             comments.userId = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-            comments.comment = comment_message.getText().toString();
+            comments.comment = mBinder.commentMessageEdit.getText().toString();
             comments.timestamp = System.currentTimeMillis();
 
             FirebaseFirestore.getInstance().collection("images").document(contentUid).collection("comments").document().set(comments);
 
-            commentAlarm(destinationUid, comment_message.getText().toString());
-            comment_message.setText(""); //데이터 보낸 후 초기화
+            commentAlarm(destinationUid, mBinder.commentMessageEdit.getText().toString());
+            mBinder.commentMessageEdit.setText(""); //데이터 보낸 후 초기화
         });
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         CommentRecyclerViewAdapter commentRecyclerViewAdapter = new CommentRecyclerViewAdapter();
-        commentRecyclerView.setLayoutManager(layoutManager);
-        commentRecyclerView.setAdapter(commentRecyclerViewAdapter);
+        mBinder.commentRecyclerView.setLayoutManager(layoutManager);
+        mBinder.commentRecyclerView.setAdapter(commentRecyclerViewAdapter);
 
     }
 
@@ -105,6 +96,14 @@ public class CommentActivity extends AppCompatActivity {
         alarmDTO.timestamp = System.currentTimeMillis();
         alarmDTO.message = message;
         FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int viewId = v.getId();
+        if (viewId == R.id.icon_back_btn) {
+            onBackPressed();
+        }
     }
 
     public class CommentRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -23,14 +22,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class MainActivity extends BaseActivity<ActivityMainBinding> implements View.OnClickListener {
+public class MainActivity extends BaseActivity<ActivityMainBinding> {
     public MainActivity() {
         super(R.layout.activity_main);
     }
 
     @Override
     protected void initView(Bundle savedInstanceState) {
-        mBinder.mainDmBtn.setOnClickListener(this);
 
         //READ_EXTERNAL_STORAGE : 애플리케이션이 외부 저장소에서 읽을 수 있도록 설정
         //외부 저장소를 읽을 수 있도록 매니페스트에 권한 요청
@@ -40,6 +38,8 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
         Fragment userFragment = new UserFragment();
         Fragment homeFragment = new HomeFragment();
         Fragment gridFragment = new GridFragment();
+
+        getSupportFragmentManager().beginTransaction().add(R.id.main_content, homeFragment).commit();
 
         //하단바 네비게이션 선택 이벤트 -> 아이템 클릭할 때 프래그먼트 교체 작업
         mBinder.bottomNaviBar.setOnNavigationItemSelectedListener(item -> {
@@ -68,8 +68,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             getSupportFragmentManager().beginTransaction().replace(R.id.main_content, selected).commit();
             return false;
         });
-
-        mBinder.bottomNaviBar.setSelectedItemId(R.id.action_home);
     }
 
     //데이터베이스에 프로필 이미지 올리기 (storage에서 꺼내오는 법으로 변경이 필요함 -> 파이어스토어에 잘못 저장되고 있음)
@@ -91,15 +89,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> implements V
             });
 
 
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        int viewId = v.getId();
-        if (viewId == R.id.main_dm_btn) {
-            Intent intent = new Intent(this, DirectMessageActivity.class);
-            startActivity(intent);
         }
     }
 }
