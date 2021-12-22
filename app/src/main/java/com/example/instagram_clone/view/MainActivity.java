@@ -44,7 +44,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
         //하단바 네비게이션 선택 이벤트 -> 아이템 클릭할 때 프래그먼트 교체 작업
         mBinder.bottomNaviBar.setOnNavigationItemSelectedListener(item -> {
             int position = item.getItemId();
-            Fragment selected = null;
             if (position == R.id.action_home) {
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content, homeFragment).commit();
             } else if (position == R.id.action_search) {
@@ -59,7 +58,6 @@ public class MainActivity extends BaseActivity<ActivityMainBinding> {
                 userFragment.setArguments(bundle);
                 getSupportFragmentManager().beginTransaction().replace(R.id.main_content, userFragment).commit();
             } else if (position == R.id.action_add_photo) {
-//                여기 수정@!!!!
                 //권한 요청이 허용이 되었는지 selfCheck 후 권한이 grandted일 경우 AddPhotoActivity로 전환
                 if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == getPackageManager().PERMISSION_GRANTED) {
                     startActivity(new Intent(MainActivity.this, AddPhotoActivity.class));
