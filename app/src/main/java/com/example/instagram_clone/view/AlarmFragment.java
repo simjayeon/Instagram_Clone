@@ -95,7 +95,7 @@ public class AlarmFragment extends Fragment {
                     break;
                 case 1:
                     ((CustomViewHolder) holder).comment_profile_img.setImageResource(R.drawable.noun_commend);
-                    String str_1 = alarmDTOArrayList.get(position).userId + " " + getString(R.string.alarm_comment) + " of " + "\"" + alarmDTOArrayList.get(position).message + "\"";
+                    String str_1 = alarmDTOArrayList.get(position).userId + " " + getString(R.string.alarm_comment) + "\n\"" + alarmDTOArrayList.get(position).message + "\"";
                     ((CustomViewHolder) holder).comment_comment_txt.setText(str_1);
                     break;
                 case 2:
