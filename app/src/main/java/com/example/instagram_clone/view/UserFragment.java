@@ -37,7 +37,7 @@ public class UserFragment extends Fragment {
     UserFragmentAdapter userFragmentAdapter;
     RecyclerView recyclerView;
     String uid, currentUserId, selectUserid;
-    ImageView account_iv_profile;
+    ImageView account_iv_profile, btnFollowRequireAlarm;
     Button btn_follow;
     TextView account_tv_following_count,
             account_tv_follower_count, account_post_count,
@@ -65,7 +65,11 @@ public class UserFragment extends Fragment {
         account_tv_follower_count = view.findViewById(R.id.account_tv_follower_count);
         account_post_count = view.findViewById(R.id.account_tv_post_count);
         user_page_id = view.findViewById(R.id.user_page_id);
-
+        btnFollowRequireAlarm = view.findViewById(R.id.btn_follow_require_alarm);
+        btnFollowRequireAlarm.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), FollowRequireAlarmActivity.class);
+            startActivity(intent);
+        });
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
@@ -171,47 +175,53 @@ public class UserFragment extends Fragment {
             if (followDTO.followings.size() == 0) {
                 followDTO.followings.put(uid, true);
                 followDTO.followingCount += 1;
-                account_tv_following_count.setText(followDTO.followingCount);
-
+                btn_follow.setText(R.string.follow_cancel);
             } else {
                 //조건 2
                 if (followDTO.followings.containsKey(uid)) {
                     //이미 팔로워 된 uid일 경우
-                    followDTO.followingCount = followDTO.followerCount - 1; //팔로워 취소
+                    followDTO.followingCount -= 1; //팔로워 취소
                     followDTO.followings.remove(uid); //uid삭제
-                    account_tv_following_count.setText(followDTO.followingCount);
-                } else if (followDTO.followings.size() == 0 && followDTO.followers.containsKey(currentUserId)) {
+                    btn_follow.setText(R.string.follow);
+                } else {
                     //팔로워가 되어있지 않은 uid일 경우
-                    followDTO.followingCount = followDTO.followerCount + 1; //팔로워
+                    followDTO.followingCount -= 1; //팔로워
                     followDTO.followings.put(uid, true); //uid등록
-                    account_tv_following_count.setText(followDTO.followingCount);
                     followerAlarm(uid);
+                    btn_follow.setText(R.string.follow_cancel);
                 }
             }
-
-            return transaction.set(FirebaseFirestore.getInstance().collection("follow").document(currentUserId), followDTO); //db에 저장
+            transaction.set(FirebaseFirestore.getInstance().collection("follow").document(currentUserId), followDTO); //db에 저장
+            return null;
         });
 
 
-        //내가 팔로잉 한 상대방 계정
-//        DocumentReference doFollower = firestore.collection("follow").document(this.uid);
-//        firestore.runTransaction(transaction -> {
-//            followDTO = transaction.get(doFollower).toObject(FollowDTO.class);
-//            if (followDTO == null) {
-//                followDTO.followerCount = 1;
-//                followDTO.followers.get(this.currentUserId);
-//            } else {
-//                if (followDTO.followers.containsKey(this.currentUserId)) {
-//                    followDTO.followerCount = followDTO.followerCount - 1;
-//                    followDTO.followers.remove(this.currentUserId);
-//                } else {
-//                    followDTO.followerCount = followDTO.followerCount + 1;
-//                    followDTO.followers.put(this.currentUserId, true);
+//        내가 팔로잉 한 상대방 계정
+        FirebaseFirestore.getInstance().runTransaction(transaction -> {
+            DocumentReference doFollower = FirebaseFirestore.getInstance().collection("follow").document(uid);
+            FollowDTO followDTO = transaction.get(doFollower).toObject(FollowDTO.class);
+            if (followDTO.followers.size() == 0) {
+                followDTO.followerCount += 1;
+                followDTO.followers.put(this.currentUserId, true);
+                followDTO.followersRequire.put(this.currentUserId, true);
+//                account_tv_following_count.setText(followDTO.followerCount);
+            } else {
+                if (followDTO.followers.containsKey(this.currentUserId)) {
+                    followDTO.followerCount -= 1;
+                    followDTO.followers.remove(this.currentUserId);
+                    followDTO.followersRequire.remove(this.currentUserId);
+//                    account_tv_following_count.setText(followDTO.followerCount);
+                } else {
+                    followDTO.followerCount += 1;
+                    followDTO.followers.put(this.currentUserId, true);
+                    followDTO.followersRequire.put(this.currentUserId, true);
+//                    account_tv_following_count.setText(followDTO.followerCount);
 //                    followerAlarm(this.currentUserId);
-//                }
-//            }
-//            return transaction.set(doFollower, followDTO);
-//        });
+                }
+            }
+            transaction.set(FirebaseFirestore.getInstance().collection("follow").document(uid), followDTO); //db에 저장
+            return null;
+        });
 
     }
 
