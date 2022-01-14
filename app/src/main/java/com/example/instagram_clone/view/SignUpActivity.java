@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.databinding.ActivitySignUpBinding;
+import com.example.instagram_clone.model.FollowDTO;
 import com.example.instagram_clone.model.UserDTO;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,12 +35,19 @@ public class SignUpActivity extends BaseActivity<ActivitySignUpBinding> {
                         moveMainPage(task.getResult().getUser());
                         UserDTO userDTO = new UserDTO();
                         userDTO.signUp(mBinder.signUpEditEmail.getText().toString(), mBinder.signUpEditPassword.getText().toString());
+                        followSetting();
                         FirebaseFirestore.getInstance().collection("users").document().set(userDTO);
                     } else {
                         Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show();
                     }
 
                 });
+    }
+
+    public void followSetting() {
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FollowDTO followDTO = new FollowDTO();
+        FirebaseFirestore.getInstance().collection("follow").document(uid).set(followDTO);
     }
 
 

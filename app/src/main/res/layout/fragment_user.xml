@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/user_page_id"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:padding="10dp"
+            android:text="유저이름"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/btn_follow_require_alarm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="10dp"
+            android:src="@drawable/ic_bell" />
+    </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -16,84 +39,74 @@
             android:layout_alignParentLeft="true"
             android:src="@drawable/ic_account" />
 
-        <TextView
-            android:id="@+id/user_page_id"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            android:layout_margin="3dp"
-            android:layout_below="@id/account_iv_profile"
-            android:text="유저이름"
-            android:textStyle="bold"
-            android:textAlignment="center"/>
-
         <Button
             android:id="@+id/btn_follow"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_margin="10dp"
-            android:text="@string/follow"
-            android:textColor="@color/black"
             android:layout_alignParentBottom="true"
+            android:layout_margin="10dp"
             android:layout_toRightOf="@id/account_iv_profile"
-            android:backgroundTint="#DCDCDC"/>
+            android:backgroundTint="#DCDCDC"
+            android:text="@string/follow"
+            android:textColor="@color/black" />
 
         <LinearLayout
             android:id="@+id/layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toRightOf="@id/account_iv_profile"
             android:layout_above="@id/btn_follow"
+            android:layout_toRightOf="@id/account_iv_profile"
             android:gravity="center">
 
             <LinearLayout
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/post"/>
+                    android:text="@string/post" />
 
                 <TextView
                     android:id="@+id/account_tv_post_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/count_0"/>
+                    android:text="@string/count_0" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/follower"/>
+                    android:text="@string/follower" />
 
                 <TextView
                     android:id="@+id/account_tv_follower_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/count_0"/>
+                    android:text="@string/count_0" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/following"/>
+                    android:text="@string/following" />
 
                 <TextView
                     android:id="@+id/account_tv_following_count"
@@ -107,7 +120,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/account_recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
     </androidx.recyclerview.widget.RecyclerView>
 

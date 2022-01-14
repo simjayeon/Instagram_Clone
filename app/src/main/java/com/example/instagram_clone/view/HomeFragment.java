@@ -23,7 +23,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 
@@ -56,15 +55,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(recyclerViewAdapter);
 
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                String token = task.getResult();
-                System.out.println(token + "토큰");
-            }
-        });
+//        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+//            if (task.isSuccessful()) {
+//                String token = task.getResult();
+//                System.out.println(token + "토큰");
+//            }
+//        });
 
         return view;
     }
+
 
     @Override
     public void onClick(View v) {
@@ -228,6 +228,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     //누른 사람의 uid를 contentDTO.favorities에 put 해야 구분할 수 있음
                     contentDTO.favorities.put(uid, true);
                     RecyclerViewAdapter.this.favoriteAlarm(contentDTOS.get(position).uid); //카운터가 올라가는 사람이름 알림
+//                    Intent fcm = new Intent(getActivity(), FCMService.class);
+//                    fcm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    startActivity(fcm);
                 }
 
                 //트랜잭션을 다시 서버로 돌려준다.

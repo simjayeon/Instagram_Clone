@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.databinding.ActivityMainBinding;
+import com.example.instagram_clone.model.FollowDTO;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
