@@ -55,4 +55,9 @@ public class FCMService extends FirebaseMessagingService {
         Notification notification = builder.build();
         notificationManager.notify(0, notification);
     }
+
+    @Override
+    public void onNewToken(@NonNull String s) {
+        super.onNewToken(s);
+    }
 }

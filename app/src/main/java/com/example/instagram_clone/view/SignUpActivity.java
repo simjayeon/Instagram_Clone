@@ -7,8 +7,10 @@ import android.widget.Toast;
 
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.databinding.ActivitySignUpBinding;
+import com.example.instagram_clone.model.UserDTO;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SignUpActivity extends BaseActivity<ActivitySignUpBinding> {
     FirebaseAuth firebaseAuth;
@@ -30,6 +32,9 @@ public class SignUpActivity extends BaseActivity<ActivitySignUpBinding> {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         moveMainPage(task.getResult().getUser());
+                        UserDTO userDTO = new UserDTO();
+                        userDTO.signUp(mBinder.signUpEditEmail.getText().toString(), mBinder.signUpEditPassword.getText().toString());
+                        FirebaseFirestore.getInstance().collection("users").document().set(userDTO);
                     } else {
                         Toast.makeText(this, "회원가입 실패", Toast.LENGTH_SHORT).show();
                     }
@@ -58,4 +63,6 @@ public class SignUpActivity extends BaseActivity<ActivitySignUpBinding> {
                     dialog.dismiss(); //대화상자 닫기
                 }).show();
     }
+
+
 }

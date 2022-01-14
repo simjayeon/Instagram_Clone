@@ -2,6 +2,7 @@ package com.example.instagram_clone.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -11,6 +12,7 @@ import androidx.annotation.Nullable;
 
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.databinding.ActivityLoginBinding;
+import com.example.instagram_clone.model.UserDTO;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -30,6 +32,8 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Arrays;
 
@@ -115,12 +119,29 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                     if (task.isSuccessful()) {
                         //로그인 성공 시
                         moveMainPage(task.getResult().getUser());
-                        System.out.println(task.getResult().getUser() + "어떤가");
+                        getNewToken();
                     } else {
                         //회원가입 실패시
                         Toast.makeText(LoginActivity.this, "로그인 실패", Toast.LENGTH_SHORT).show();
                     }
 
+                });
+    }
+
+    public void getNewToken() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w(TAG, "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+                    // Get new FCM registration token
+                    String token = task.getResult();
+                    UserDTO userDTO = new UserDTO();
+                    userDTO.setFcmToken(token);
+                    FirebaseFirestore.getInstance().collection("users").document().set(userDTO);
+                    // Log and toast
+                    Log.d(TAG, "token : " + token);
                 });
     }
 
