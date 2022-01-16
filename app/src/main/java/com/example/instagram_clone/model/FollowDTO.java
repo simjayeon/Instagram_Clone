@@ -8,6 +8,15 @@ public class FollowDTO {
     public int followerCount;
     //팔로워 리스트 (중복 팔로워를 방지하기 위해)
     public Map<String, Boolean> followers = new HashMap<>();
+
+    public Map<String, Boolean> getFollowersRequire() {
+        return followersRequire;
+    }
+
+    public void setFollowersRequire(Map<String, Boolean> followersRequire) {
+        this.followersRequire = followersRequire;
+    }
+
     //팔로우 요청 리스트
     public Map<String, Boolean> followersRequire = new HashMap<>();
 

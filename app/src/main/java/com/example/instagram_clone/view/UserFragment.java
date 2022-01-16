@@ -1,5 +1,6 @@
 package com.example.instagram_clone.view;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -41,7 +42,7 @@ public class UserFragment extends Fragment {
     Button btn_follow;
     TextView account_tv_following_count,
             account_tv_follower_count, account_post_count,
-            user_page_id;
+            user_page_id, followRequireBadge;
     BottomNavigationView bottomNavigationView;
     int PICK_PROFILE_FROM_ALBUM = 55;
 
@@ -65,11 +66,13 @@ public class UserFragment extends Fragment {
         account_tv_follower_count = view.findViewById(R.id.account_tv_follower_count);
         account_post_count = view.findViewById(R.id.account_tv_post_count);
         user_page_id = view.findViewById(R.id.user_page_id);
+        followRequireBadge = view.findViewById(R.id.follow_require_alarm_badge);
         btnFollowRequireAlarm = view.findViewById(R.id.btn_follow_require_alarm);
         btnFollowRequireAlarm.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), FollowRequireAlarmActivity.class);
             startActivity(intent);
         });
+//        getFollowBadge();
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
@@ -104,6 +107,26 @@ public class UserFragment extends Fragment {
 //        getFollowerAndFollowing();
 
         return view;
+    }
+
+    //todo : 팔로우 요청 왔을 때 배지 값 띄우기
+    @SuppressLint("SetTextI18n")
+    public void getFollowBadge() {
+        FirebaseFirestore.getInstance().collection("follow").document(currentUserId)
+                .addSnapshotListener((value, error) -> {
+                    if (value == null) {
+                        //쿼리값이 없을 때 바로 종료시키는 것 (오류 방지)
+                    }
+
+                    FollowDTO followDTO = value.toObject(FollowDTO.class);
+                    int badgeCount = followDTO.followersRequire.size();
+                    if (badgeCount == 0) {
+                        followRequireBadge.setVisibility(View.GONE);
+                    } else {
+                        followRequireBadge.setVisibility(View.VISIBLE);
+                        followRequireBadge.setText(Integer.toString(badgeCount));
+                    }
+                });
     }
 
     public void getProfileMe() {
@@ -262,6 +285,21 @@ public class UserFragment extends Fragment {
                 account_post_count.setText(String.valueOf(contentDTOS.size()));
                 notifyDataSetChanged(); //새로고침
             });
+
+//            firestore.collection("follow").document(currentUserId).addSnapshotListener(((value, error) -> {
+//                if (value == null) {
+//                    //쿼리값이 없을 때 바로 종료시키는 것 (오류 방지)
+//                }
+//
+//                FollowDTO followDTO = value.toObject(FollowDTO.class);
+//                int badgeCount = followDTO.followersRequire.size();
+//                if (badgeCount == 0) {
+//                    followRequireBadge.setVisibility(View.GONE);
+//                } else {
+//                    followRequireBadge.setVisibility(View.VISIBLE);
+//                    followRequireBadge.setText(Integer.toString(badgeCount));
+//                }
+//            }));
         }
 
         @NonNull

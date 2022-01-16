@@ -16,11 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.model.AlarmDTO;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -53,21 +50,18 @@ public class AlarmFragment extends Fragment {
 
             //whereEqualTo("destinationUid", uid) -> collection 속 alarms의 uid와 현재 접속한 사용자의 uid가 같을 때의 값을 가져옴
             FirebaseFirestore.getInstance().collection("alarms").whereEqualTo("destinationUid", uid)
-                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                        @Override
-                        public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                    .addSnapshotListener((value, error) -> {
 
-                            value.getDocuments();
-                            alarmDTOArrayList.clear();
+                        value.getDocuments();
+                        alarmDTOArrayList.clear();
 
-                            if (value == null) {
-                            }
-
-                            for (QueryDocumentSnapshot doc : value) {
-                                AlarmRecyclerviewAdapter.this.alarmDTOArrayList.add(doc.toObject(AlarmDTO.class));
-                            }
-                            notifyDataSetChanged();
+                        if (value == null) {
                         }
+
+                        for (QueryDocumentSnapshot doc : value) {
+                            AlarmRecyclerviewAdapter.this.alarmDTOArrayList.add(doc.toObject(AlarmDTO.class));
+                        }
+                        notifyDataSetChanged();
                     });
         }
 
