@@ -37,7 +37,7 @@ public class UserFragment extends Fragment {
 
     UserFragmentAdapter userFragmentAdapter;
     RecyclerView recyclerView;
-    String uid, currentUserId, selectUserid;
+    String uid, currentUserId, selectUserId;
     ImageView account_iv_profile, btnFollowRequireAlarm;
     Button btn_follow;
     TextView account_tv_following_count,
@@ -77,7 +77,9 @@ public class UserFragment extends Fragment {
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             uid = bundle.getString("destinationUid"); //프로필 이미지의 유저 uid
-            selectUserid = bundle.getString("userId");  //유저의 email
+            selectUserId = bundle.getString("userId");  //유저의 email
+
+            currentUserId = firebaseAuth.getCurrentUser().getUid();
 
             //상대 프로필인지 나인지 확인하기
             if (uid != null && uid.equals(currentUserId)) {
@@ -85,13 +87,13 @@ public class UserFragment extends Fragment {
                 getProfileMe();
             } else if (uid != null) {
                 //프로필이 다른 사람일 때
-                user_page_id.setText(selectUserid);
+                user_page_id.setText(selectUserId);
                 btn_follow.setText(R.string.follow);
-                btn_follow.setOnClickListener(v -> requestFollow(uid, currentUserId));
+                btn_follow.setOnClickListener(v -> requestFollow());
             }
         }
 
-        currentUserId = firebaseAuth.getCurrentUser().getUid();
+//        currentUserId = firebaseAuth.getCurrentUser().getUid();
 
         //유저프래그먼트에 프로필 사진 올리기
         account_iv_profile.setOnClickListener(v -> {
@@ -141,16 +143,17 @@ public class UserFragment extends Fragment {
 
     //데이터베이스에서 이미지 가져오기 (오류가 여기인가)
     public void getProfileImage() {
-        firestore.collection("profileImages").document(uid).addSnapshotListener((value, error) -> {
-            if (value.getData() != null) {
-                String url = value.getData().toString();
+        firestore.collection("profileImages").document(uid)
+                .addSnapshotListener((value, error) -> {
+                    if (value.getData() != null) {
+                        String url = value.getData().toString();
 
-                // 여기 오류
-                //Glide.with(getActivity()).load(url).apply(new RequestOptions().circleCrop()).into(account_iv_profile);
-            } else {
+                        // 여기 오류
+                        //Glide.with(getActivity()).load(url).apply(new RequestOptions().circleCrop()).into(account_iv_profile);
+                    } else {
 
-            }
-        });
+                    }
+                });
     }
 
 //    //팔로워 값 변경
@@ -182,13 +185,15 @@ public class UserFragment extends Fragment {
     //내 계정에는 상대방 누구를 팔로워 하는지
     //과정의 트랜잭션
     //먼저 팔로워 리스트에 값이 들어가야할 것 같음 -> 내가 누구를 팔로워/팔로잉 했는지
-    public void requestFollow(String uid, String currentUserId) {
-        // 내 팔로워
-        this.uid = uid;
-        this.currentUserId = currentUserId;
+    public void requestFollow() {
+        Bundle bundle = this.getArguments();
+        String selectedUid = bundle.getString("destinationUid");
+        String selectedEmail = bundle.getString("userId");
+
+        String currentFollowUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         FirebaseFirestore.getInstance().runTransaction(transaction -> {
-            DocumentReference doFollowing = FirebaseFirestore.getInstance().collection("follow").document(currentUserId); //팔로으 누른 사람(현재 로그인 한 사람)
+            DocumentReference doFollowing = FirebaseFirestore.getInstance().collection("follow").document(currentFollowUid); //팔로으 누른 사람(현재 로그인 한 사람)
             FollowDTO followDTO = transaction.get(doFollowing).toObject(FollowDTO.class);
             //get을 put으로
             //documentRef 쓰는게 맞는지
@@ -196,53 +201,58 @@ public class UserFragment extends Fragment {
             //조건 1
 
             if (followDTO.followings.size() == 0) {
-                followDTO.followings.put(uid, true);
+                followDTO.followings.put(selectedEmail, true);
                 followDTO.followingCount += 1;
                 btn_follow.setText(R.string.follow_cancel);
             } else {
                 //조건 2
-                if (followDTO.followings.containsKey(uid)) {
+                if (followDTO.followings.containsKey(selectedUid)) {
                     //이미 팔로워 된 uid일 경우
                     followDTO.followingCount -= 1; //팔로워 취소
-                    followDTO.followings.remove(uid); //uid삭제
+                    followDTO.followings.remove(selectedEmail); //uid삭제
                     btn_follow.setText(R.string.follow);
                 } else {
                     //팔로워가 되어있지 않은 uid일 경우
                     followDTO.followingCount -= 1; //팔로워
-                    followDTO.followings.put(uid, true); //uid등록
+                    followDTO.followings.put(selectedEmail, true); //uid등록
                     followerAlarm(uid);
                     btn_follow.setText(R.string.follow_cancel);
                 }
             }
-            transaction.set(FirebaseFirestore.getInstance().collection("follow").document(currentUserId), followDTO); //db에 저장
+            transaction.set(FirebaseFirestore.getInstance().collection("follow").document(), followDTO); //db에 저장
             return null;
         });
 
 
 //        내가 팔로잉 한 상대방 계정
         FirebaseFirestore.getInstance().runTransaction(transaction -> {
-            DocumentReference doFollower = FirebaseFirestore.getInstance().collection("follow").document(uid);
+            DocumentReference doFollower = FirebaseFirestore.getInstance().collection("follow").document(selectedUid);
             FollowDTO followDTO = transaction.get(doFollower).toObject(FollowDTO.class);
             if (followDTO.followers.size() == 0) {
                 followDTO.followerCount += 1;
-                followDTO.followers.put(this.currentUserId, true);
-                followDTO.followersRequire.put(this.currentUserId, true);
+                followDTO.followers.put(currentFollowUid, true);
+                followDTO.followersRequire.put(firebaseAuth.getCurrentUser().getEmail(), true);
 //                account_tv_following_count.setText(followDTO.followerCount);
             } else {
-                if (followDTO.followers.containsKey(this.currentUserId)) {
+                if (followDTO.followers.containsKey(currentFollowUid)) {
                     followDTO.followerCount -= 1;
-                    followDTO.followers.remove(this.currentUserId);
-                    followDTO.followersRequire.remove(this.currentUserId);
+                    followDTO.followers.remove(firebaseAuth.getCurrentUser().getEmail());
+                    followDTO.followersRequire.remove(firebaseAuth.getCurrentUser().getEmail());
 //                    account_tv_following_count.setText(followDTO.followerCount);
                 } else {
                     followDTO.followerCount += 1;
-                    followDTO.followers.put(this.currentUserId, true);
-                    followDTO.followersRequire.put(this.currentUserId, true);
+                    followDTO.followers.put(firebaseAuth.getCurrentUser().getEmail(), true);
+                    followDTO.followersRequire.put(firebaseAuth.getCurrentUser().getEmail(), true);
 //                    account_tv_following_count.setText(followDTO.followerCount);
 //                    followerAlarm(this.currentUserId);
                 }
             }
-            transaction.set(FirebaseFirestore.getInstance().collection("follow").document(uid), followDTO); //db에 저장
+            transaction.set(FirebaseFirestore.getInstance().collection("follow").document(selectedUid), followDTO); //db에 저장
+
+//            FollowRequireDTO followRequireDTO = new FollowRequireDTO();
+//            followRequireDTO.setFollowRequire(currentUserId,FirebaseAuth.getInstance().getCurrentUser().getEmail(), System.currentTimeMillis() );
+//            FirebaseFirestore.getInstance().collection("followRequire").document(uid).set(followRequireDTO);
+
             return null;
         });
 
@@ -273,18 +283,19 @@ public class UserFragment extends Fragment {
             //파이어스토어에서 데이터 값 읽어오기
             //내가 올린 이미지만 뜰 수 있도록.whereEqualTo("uid", uid) -> uid 값이 내 uid값 일때만
 
-            firestore.collection("images").whereEqualTo("uid", uid).addSnapshotListener((value, error) -> {
-                if (value == null) {
-                    //쿼리값이 없을 때 바로 종료시키는 것 (오류 방지)
-                }
+            firestore.collection("images").whereEqualTo("uid", uid)
+                    .addSnapshotListener((value, error) -> {
+                        if (value == null) {
+                            //쿼리값이 없을 때 바로 종료시키는 것 (오류 방지)
+                        }
 
-                //데이터를 받아주는 부분
-                for (QueryDocumentSnapshot doc : value) {
-                    contentDTOS.add(doc.toObject(ContentDTO.class));
-                }
-                account_post_count.setText(String.valueOf(contentDTOS.size()));
-                notifyDataSetChanged(); //새로고침
-            });
+                        //데이터를 받아주는 부분
+                        for (QueryDocumentSnapshot doc : value) {
+                            contentDTOS.add(doc.toObject(ContentDTO.class));
+                        }
+                        account_post_count.setText(String.valueOf(contentDTOS.size()));
+                        notifyDataSetChanged(); //새로고침
+                    });
 
 //            firestore.collection("follow").document(currentUserId).addSnapshotListener(((value, error) -> {
 //                if (value == null) {

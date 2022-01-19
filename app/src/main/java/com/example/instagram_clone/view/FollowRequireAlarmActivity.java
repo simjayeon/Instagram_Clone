@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.databinding.ActivityFollowRequireAlarmBinding;
 import com.example.instagram_clone.model.FollowDTO;
-import com.example.instagram_clone.model.UserDTO;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -47,7 +46,6 @@ public class FollowRequireAlarmActivity extends BaseActivity<ActivityFollowRequi
 
 
 class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-    ArrayList<UserDTO> requireList = new ArrayList<>();
     ArrayList<FollowDTO> arrayList = new ArrayList();
 
     public RecyclerViewAdapter() {
@@ -55,26 +53,12 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewH
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         FirebaseFirestore.getInstance().collection("follow").document(uid)
                 .addSnapshotListener((value, error) -> {
-                    if (value == null) {
-                    }
                     arrayList.clear();
                     FollowDTO followDTO = value.toObject(FollowDTO.class);
+
                     arrayList.add(followDTO);
                     notifyDataSetChanged();
                 });
-
-        //todo : 팔로우 이메일 가져오기
-
-//        for (int i =0; i<arrayList.size(); i++){
-//            String followUid = arrayList.get(i).followersRequire.toString();
-//            FirebaseFirestore.getInstance().collection("users").document(followUid)
-//                    .addSnapshotListener((value, error) -> {
-//                        if (value == null) {
-//                        }
-//                        requireList.add(value.toObject(UserDTO.class));
-//                        notifyDataSetChanged();
-//                    });
-//        }
     }
 
 
@@ -85,10 +69,11 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewH
         return new ViewHolder(view);
     }
 
-    //todo : 팔로우 이메일로 바꾸기
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.email.setText(arrayList.get(position).getFollowersRequire().toString());
+        String str = arrayList.get(position).followersRequire.toString();
+        String str2 = str.substring(1, str.lastIndexOf("="));
+        holder.email.setText(str2);
     }
 
     @Override
