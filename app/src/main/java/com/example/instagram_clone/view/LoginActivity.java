@@ -13,14 +13,9 @@ import androidx.annotation.Nullable;
 import com.example.instagram_clone.R;
 import com.example.instagram_clone.databinding.ActivityLoginBinding;
 import com.example.instagram_clone.model.UserDTO;
-import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-import com.facebook.login.LoginManager;
-import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -28,14 +23,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
-
-import java.util.Arrays;
 
 public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
 
@@ -90,7 +82,7 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
                 googleLogin();
                 break;
             case R.id.btn_facebook:
-                facebookLogin();
+//                facebookLogin();
                 break;
             case R.id.btn_signup_start:
                 signUp();
@@ -188,36 +180,36 @@ public class LoginActivity extends BaseActivity<ActivityLoginBinding> {
     }
 
 
-    private void facebookLogin() {
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
-        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                handleFacebookAccessToken(loginResult.getAccessToken());
-            }
+//    private void facebookLogin() {
+//        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "email"));
+//        LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+//            @Override
+//            public void onSuccess(LoginResult loginResult) {
+//                handleFacebookAccessToken(loginResult.getAccessToken());
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//
+//            }
+//
+//            @Override
+//            public void onError(FacebookException error) {
+//
+//            }
+//        });
+//    }
 
-            @Override
-            public void onCancel() {
 
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-
-            }
-        });
-    }
-
-
-    private void handleFacebookAccessToken(AccessToken accessToken) {
-        AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
-        firebaseAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        moveMainPage(task.getResult().getUser());
-                    }
-                });
-    }
+//    private void handleFacebookAccessToken(AccessToken accessToken) {
+//        AuthCredential credential = FacebookAuthProvider.getCredential(accessToken.getToken());
+//        firebaseAuth.signInWithCredential(credential)
+//                .addOnCompleteListener(this, task -> {
+//                    if (task.isSuccessful()) {
+//                        moveMainPage(task.getResult().getUser());
+//                    }
+//                });
+//    }
 
 
     //메인 페이지로 이동 메소드
