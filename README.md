@@ -24,7 +24,6 @@
 
 ### DM
 <img width="20%" src="https://user-images.githubusercontent.com/63222036/150293987-1512df1a-4802-4944-9103-0d03cbad59a9.png"/>
-![image]()
 
 ### 게시글 작성
 <img width="20%" src="https://user-images.githubusercontent.com/63222036/149624284-63b6be4d-120e-45b5-86ae-d497d2bd7dc7.png"/>
