@@ -38,7 +38,7 @@ public class UserFragment extends Fragment {
     UserFragmentAdapter userFragmentAdapter;
     RecyclerView recyclerView;
     String uid, currentUserId, selectUserId;
-    ImageView account_iv_profile, btnFollowRequireAlarm;
+    ImageView account_iv_profile, btnFollowRequireAlarm, btnDirectMessage;
     Button btn_follow;
     TextView account_tv_following_count,
             account_tv_follower_count, account_post_count,
@@ -67,33 +67,41 @@ public class UserFragment extends Fragment {
         account_post_count = view.findViewById(R.id.account_tv_post_count);
         user_page_id = view.findViewById(R.id.user_page_id);
         followRequireBadge = view.findViewById(R.id.follow_require_alarm_badge);
+        btnDirectMessage = view.findViewById(R.id.btn_direct_message);
         btnFollowRequireAlarm = view.findViewById(R.id.btn_follow_require_alarm);
+
+        Bundle bundle = this.getArguments();
+        uid = bundle.getString("destinationUid"); //프로필 이미지의 유저 uid
+        selectUserId = bundle.getString("userId");  //유저의 email
+
+        currentUserId = firebaseAuth.getCurrentUser().getUid();
+
+        //상대 프로필인지 나인지 확인하기
+        if (uid != null && uid.equals(currentUserId)) {
+            //프로필이 나일 때
+            getProfileMe();
+        } else if (uid != null) {
+            //프로필이 다른 사람일 때
+            user_page_id.setText(selectUserId);
+            btnDirectMessage.setVisibility(View.VISIBLE);
+            btn_follow.setText(R.string.follow);
+            btn_follow.setOnClickListener(v -> requestFollow());
+        }
+
+        if (bundle == null) {
+        }
+
+        btnDirectMessage.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), MessageRoomActivity.class);
+            intent.putExtra("uid", uid);
+            intent.putExtra("email", selectUserId);
+            startActivity(intent);
+        });
+
         btnFollowRequireAlarm.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), FollowRequireAlarmActivity.class);
             startActivity(intent);
         });
-//        getFollowBadge();
-
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            uid = bundle.getString("destinationUid"); //프로필 이미지의 유저 uid
-            selectUserId = bundle.getString("userId");  //유저의 email
-
-            currentUserId = firebaseAuth.getCurrentUser().getUid();
-
-            //상대 프로필인지 나인지 확인하기
-            if (uid != null && uid.equals(currentUserId)) {
-                //프로필이 나일 때
-                getProfileMe();
-            } else if (uid != null) {
-                //프로필이 다른 사람일 때
-                user_page_id.setText(selectUserId);
-                btn_follow.setText(R.string.follow);
-                btn_follow.setOnClickListener(v -> requestFollow());
-            }
-        }
-
-//        currentUserId = firebaseAuth.getCurrentUser().getUid();
 
         //유저프래그먼트에 프로필 사진 올리기
         account_iv_profile.setOnClickListener(v -> {
@@ -138,6 +146,7 @@ public class UserFragment extends Fragment {
             startActivity(new Intent(getActivity(), LoginActivity.class));
             firebaseAuth.signOut();  //종료되는거 수정필요
         });
+        btnDirectMessage.setVisibility(View.GONE);
     }
 
 
@@ -169,7 +178,7 @@ public class UserFragment extends Fragment {
 //                if (followDTO.followerCount != null) {
 //                    account_tv_follower_count.setText(String.valueOf(followDTO.followerCount));
 //
-//                    //내가 팔로워를 하고 있으면면
+//                    //내가 팔로워를 하고 있으면
 //                    if (followDTO.followers.containsKey(currentUserId)) {
 //                        btn_follow.setText(getString(R.string.follow_cancel));
 //                    } else {
@@ -232,27 +241,19 @@ public class UserFragment extends Fragment {
                 followDTO.followerCount += 1;
                 followDTO.followers.put(currentFollowUid, true);
                 followDTO.followersRequire.put(firebaseAuth.getCurrentUser().getEmail(), true);
-//                account_tv_following_count.setText(followDTO.followerCount);
             } else {
                 if (followDTO.followers.containsKey(currentFollowUid)) {
                     followDTO.followerCount -= 1;
                     followDTO.followers.remove(firebaseAuth.getCurrentUser().getEmail());
                     followDTO.followersRequire.remove(firebaseAuth.getCurrentUser().getEmail());
-//                    account_tv_following_count.setText(followDTO.followerCount);
                 } else {
                     followDTO.followerCount += 1;
                     followDTO.followers.put(firebaseAuth.getCurrentUser().getEmail(), true);
                     followDTO.followersRequire.put(firebaseAuth.getCurrentUser().getEmail(), true);
-//                    account_tv_following_count.setText(followDTO.followerCount);
 //                    followerAlarm(this.currentUserId);
                 }
             }
             transaction.set(FirebaseFirestore.getInstance().collection("follow").document(selectedUid), followDTO); //db에 저장
-
-//            FollowRequireDTO followRequireDTO = new FollowRequireDTO();
-//            followRequireDTO.setFollowRequire(currentUserId,FirebaseAuth.getInstance().getCurrentUser().getEmail(), System.currentTimeMillis() );
-//            FirebaseFirestore.getInstance().collection("followRequire").document(uid).set(followRequireDTO);
-
             return null;
         });
 
