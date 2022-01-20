@@ -20,8 +20,10 @@
 <img width="20%" src="https://user-images.githubusercontent.com/63222036/149624310-719b78d6-5b69-4d9f-ac1b-931f38c8410b.png"/>
 
 ### 팔로우요청알림
+<img width="20%" src="https://user-images.githubusercontent.com/63222036/150278400-1f4085c3-b6a9-40d6-830e-91264ea57c71.png"/>
 
 ### DM
+
 
 ### 게시글 작성
 <img width="20%" src="https://user-images.githubusercontent.com/63222036/149624284-63b6be4d-120e-45b5-86ae-d497d2bd7dc7.png"/>
